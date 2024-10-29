@@ -19,6 +19,8 @@ import java.awt.FlowLayout;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class VentanaLogin {
 
@@ -62,6 +64,12 @@ public class VentanaLogin {
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JButton RegisterButton = new JButton("REGISTRAR");
+		RegisterButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaRegister ventanaRegister = new VentanaRegister();
+				ventanaRegister.setVisible(true);
+			}
+		});
 		panel.add(RegisterButton);
 		RegisterButton.setBorderPainted(false);
 		RegisterButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagen/nuevo.png")));
