@@ -15,6 +15,7 @@ import java.awt.Insets;
 import javax.swing.JPasswordField;
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
+import java.awt.FlowLayout;
 
 public class VentanaLogin {
 
@@ -55,11 +56,14 @@ public class VentanaLogin {
 		
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
+		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JButton RegisterButton = new JButton("REGISTRAR");
+		RegisterButton.setMargin(new Insets(10, 20, 10, 20));
 		panel.add(RegisterButton);
 		
 		JButton LoginButton = new JButton("LOGIN");
+		LoginButton.setMargin(new Insets(10, 20, 10, 20));
 		panel.add(LoginButton);
 		
 		JLabel lblNewLabel = new JLabel("AppChat");
