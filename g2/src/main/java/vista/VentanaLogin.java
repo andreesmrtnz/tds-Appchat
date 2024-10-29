@@ -16,6 +16,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.Component;
+import javax.swing.ImageIcon;
 
 public class VentanaLogin {
 
@@ -59,60 +62,73 @@ public class VentanaLogin {
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JButton RegisterButton = new JButton("REGISTRAR");
-		RegisterButton.setMargin(new Insets(10, 20, 10, 20));
 		panel.add(RegisterButton);
+		RegisterButton.setBorderPainted(false);
+		RegisterButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagen/nuevo.png")));
+		RegisterButton.setBackground(new Color(190, 238, 243));
+		RegisterButton.setFont(new Font("Tahoma", Font.BOLD, 20));
+		RegisterButton.setMargin(new Insets(10, 20, 10, 20));
 		
 		JButton LoginButton = new JButton("LOGIN");
+		LoginButton.setBorderPainted(false);
+		LoginButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagen/contrasena.png")));
+		LoginButton.setBackground(new Color(190, 238, 243));
+		LoginButton.setFont(new Font("Tahoma", Font.BOLD, 20));
 		LoginButton.setMargin(new Insets(10, 20, 10, 20));
 		panel.add(LoginButton);
-		
-		JLabel lblNewLabel = new JLabel("AppChat");
-		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 50));
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		frame.getContentPane().add(lblNewLabel, BorderLayout.NORTH);
 		
 		JPanel panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.CENTER);
 		GridBagLayout gbl_panel_1 = new GridBagLayout();
-		gbl_panel_1.columnWidths = new int[]{0, 53, 132, 36, 568, 0, 0};
-		gbl_panel_1.rowHeights = new int[]{0, 65, 107, 102, 0, 0, 0};
-		gbl_panel_1.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-		gbl_panel_1.rowWeights = new double[]{0.0, 1.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_1.columnWidths = new int[]{170, 376, 155, 0};
+		gbl_panel_1.rowHeights = new int[]{153, 50, 45, 157, 0};
+		gbl_panel_1.columnWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel_1.rowWeights = new double[]{1.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		panel_1.setLayout(gbl_panel_1);
 		
-		JLabel lblNewLabel_1 = new JLabel("Telefono");
+		JLabel lblNewLabel = new JLabel("AppChat");
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel.gridx = 1;
+		gbc_lblNewLabel.gridy = 0;
+		panel_1.add(lblNewLabel, gbc_lblNewLabel);
+		lblNewLabel.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagen/chat.png")));
+		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 50));
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		JLabel lblNewLabel_1 = new JLabel("Teléfono");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
-		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_1.gridx = 2;
-		gbc_lblNewLabel_1.gridy = 2;
+		gbc_lblNewLabel_1.gridx = 0;
+		gbc_lblNewLabel_1.gridy = 1;
 		panel_1.add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
 		textField = new JTextField();
+		textField.setBackground(new Color(190, 238, 243));
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.insets = new Insets(0, 0, 5, 5);
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 4;
-		gbc_textField.gridy = 2;
+		gbc_textField.gridx = 1;
+		gbc_textField.gridy = 1;
 		panel_1.add(textField, gbc_textField);
 		textField.setColumns(10);
 		
 		JLabel lblNewLabel_2 = new JLabel("Contraseña");
 		lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
-		gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_2.gridx = 2;
-		gbc_lblNewLabel_2.gridy = 3;
+		gbc_lblNewLabel_2.gridx = 0;
+		gbc_lblNewLabel_2.gridy = 2;
 		panel_1.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
 		passwordField = new JPasswordField();
+		passwordField.setBackground(new Color(190, 238, 243));
 		GridBagConstraints gbc_passwordField = new GridBagConstraints();
 		gbc_passwordField.insets = new Insets(0, 0, 5, 5);
 		gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_passwordField.gridx = 4;
-		gbc_passwordField.gridy = 3;
+		gbc_passwordField.gridx = 1;
+		gbc_passwordField.gridy = 2;
 		panel_1.add(passwordField, gbc_passwordField);
 	}
 
