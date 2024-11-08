@@ -73,14 +73,20 @@ public class VentanaLogin {
 		panel.add(RegisterButton);
 		RegisterButton.setBorderPainted(false);
 		RegisterButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagen/nuevo.png")));
-		RegisterButton.setBackground(new Color(190, 238, 243));
+		RegisterButton.setBackground(new Color(115, 221, 194));
 		RegisterButton.setFont(new Font("Tahoma", Font.BOLD, 20));
 		RegisterButton.setMargin(new Insets(10, 20, 10, 20));
 		
 		JButton LoginButton = new JButton("LOGIN");
+		LoginButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaMain ventanaMain = new VentanaMain();
+				ventanaMain.setVisible(true);
+			}
+		});
 		LoginButton.setBorderPainted(false);
 		LoginButton.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagen/contrasena.png")));
-		LoginButton.setBackground(new Color(190, 238, 243));
+		LoginButton.setBackground(new Color(115, 221, 194));
 		LoginButton.setFont(new Font("Tahoma", Font.BOLD, 20));
 		LoginButton.setMargin(new Insets(10, 20, 10, 20));
 		panel.add(LoginButton);
@@ -94,18 +100,26 @@ public class VentanaLogin {
 		gbl_panel_1.rowWeights = new double[]{1.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		panel_1.setLayout(gbl_panel_1);
 		
+		JLabel lblNewLabel_3 = new JLabel("");
+		lblNewLabel_3.setIcon(null);
+		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
+		gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel_3.gridx = 0;
+		gbc_lblNewLabel_3.gridy = 0;
+		panel_1.add(lblNewLabel_3, gbc_lblNewLabel_3);
+		
 		JLabel lblNewLabel = new JLabel("AppChat");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel.gridx = 1;
 		gbc_lblNewLabel.gridy = 0;
 		panel_1.add(lblNewLabel, gbc_lblNewLabel);
-		lblNewLabel.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagen/chat.png")));
+		lblNewLabel.setIcon(new ImageIcon(VentanaLogin.class.getResource("/imagen/mensajeria-en-la-nube.png")));
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 50));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		JLabel lblNewLabel_1 = new JLabel("Teléfono");
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_1.gridx = 0;
@@ -113,7 +127,8 @@ public class VentanaLogin {
 		panel_1.add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
 		textField = new JTextField();
-		textField.setBackground(new Color(190, 238, 243));
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		textField.setBackground(new Color(115, 221, 194));
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.insets = new Insets(0, 0, 5, 5);
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
@@ -123,7 +138,7 @@ public class VentanaLogin {
 		textField.setColumns(10);
 		
 		JLabel lblNewLabel_2 = new JLabel("Contraseña");
-		lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblNewLabel_2.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
 		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_2.gridx = 0;
@@ -131,7 +146,8 @@ public class VentanaLogin {
 		panel_1.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBackground(new Color(190, 238, 243));
+		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		passwordField.setBackground(new Color(115, 221, 194));
 		GridBagConstraints gbc_passwordField = new GridBagConstraints();
 		gbc_passwordField.insets = new Insets(0, 0, 5, 5);
 		gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;

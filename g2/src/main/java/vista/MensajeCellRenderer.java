@@ -1,6 +1,7 @@
 package vista;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
 import java.io.IOException;
@@ -17,53 +18,59 @@ import javax.swing.ListCellRenderer;
 
 import modelo.Mensaje;
 
-public class MensajeCellRenderer extends JPanel 
-		implements ListCellRenderer<Mensaje> {
-	private JLabel userLabel;
-	private JLabel imageLabel;
-	private JTextField messageText;
+public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mensaje> {
+    private JLabel userLabel;
+    private JLabel imageLabel;
+    private JTextField messageText;
 
-	public MensajeCellRenderer() {
-		setLayout(new BorderLayout(5, 5));
+    public MensajeCellRenderer() {
+        setLayout(new BorderLayout(5, 5));
 
-		userLabel = new JLabel();
-		imageLabel = new JLabel();
-		messageText = new JTextField();
+        userLabel = new JLabel();
+        imageLabel = new JLabel();
+        messageText = new JTextField();
 
-		add(imageLabel, BorderLayout.WEST);
-		
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
-		add(messageText);
-	}
+        // Agrega la imagen a la izquierda
+        add(imageLabel, BorderLayout.WEST);
 
-	@Override
-	public Component getListCellRendererComponent(JList<? extends Mensaje> list, Mensaje mensaje, int index,
-			boolean isSelected, boolean cellHasFocus) {
-		// Set the text
-		nameLabel.setText(mensaje.toString());
+        // Panel para el nombre del usuario y el mensaje
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(userLabel);
+        
+        // Configuración de campo de texto para mostrar mensaje
+        messageText.setEditable(false);
+        panel.add(messageText);
 
-		// Load the image from a random URL (for example, using "https://robohash.org")
-		try {
-			URL imageUrl = new URL("https://robohash.org/" + (mensaje.getEmisor() != null?)+ "?size=50x50");
-			Image image = ImageIO.read(imageUrl);
-			ImageIcon imageIcon = new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-			imageLabel.setIcon(imageIcon);
-		} catch (IOException e) {
-			e.printStackTrace();
-			imageLabel.setIcon(null); // Default to no image if there was an issue
-		}
+        add(panel, BorderLayout.CENTER);
+    }
 
-		// Set background and foreground based on selection
-		if (isSelected) {
-			setBackground(list.getSelectionBackground());
-			setForeground(list.getSelectionForeground());
-		} else {
-			setBackground(list.getBackground());
-			setForeground(list.getForeground());
-		}
+    public Component getListCellRendererComponent(JList<? extends Mensaje> list, Mensaje mensaje, int index,
+                                                  boolean isSelected, boolean cellHasFocus) {
+        // Configura el nombre del usuario y el texto del mensaje
+        userLabel.setText("De: " + mensaje.getEmisor() + " a: " + mensaje.getReceptor());
+        messageText.setText(mensaje.getTexto());
 
-		return this;
-	}
+        // Carga una imagen de ejemplo con base en el emisor
+        try {
+            URL imageUrl = new URL("https://robohash.org/" + mensaje.getEmisor() + "?size=50x50");
+            Image image = ImageIO.read(imageUrl);
+            ImageIcon imageIcon = new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+            imageLabel.setIcon(imageIcon);
+        } catch (IOException e) {
+            e.printStackTrace();
+            imageLabel.setIcon(null); // Si falla, no muestra ninguna imagen
+        }
+
+        // Configuración de colores de fondo y texto según selección
+        if (isSelected) {
+            setBackground(list.getSelectionBackground());
+            setForeground(list.getSelectionForeground());
+        } else {
+            setBackground(list.getBackground());
+            setForeground(list.getForeground());
+        }
+
+        return this;
+    }
 }
