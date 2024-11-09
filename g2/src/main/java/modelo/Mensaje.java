@@ -10,14 +10,22 @@ public class Mensaje {
     private Usuario emisor;
     private Usuario receptor;
 
-    public Mensaje(String texto, String emoticono, Date fecha, String hora, Usuario emisor, Usuario receptor) {
-        this.texto = texto;
-        this.emoticono = emoticono;
-        this.fecha = fecha;
-        this.hora = hora;
-        this.emisor = emisor;
-        this.receptor = receptor;
-    }
+   
+    public Mensaje(String texto, Usuario emisor, Usuario receptor) {
+		super();
+		this.texto = texto;
+		this.emisor = emisor;
+		this.receptor = receptor;
+	}
+    
+
+	public Mensaje(String texto, String emoticono, Date fecha, String hora, Usuario emisor, Usuario receptor) {
+		super();
+		this.emoticono = emoticono;
+		this.emisor = emisor;
+		this.receptor = receptor;
+	}
+
 
 	public String getTexto() {
 		return texto;
