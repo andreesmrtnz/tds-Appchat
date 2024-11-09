@@ -25,11 +25,14 @@ import javax.swing.border.EmptyBorder;
 import modelo.Mensaje;
 import tds.BubbleText;
 import java.awt.Color;
+import java.awt.GridLayout;
+import javax.swing.JTextField;
 
 public class VentanaMain extends JFrame {
 
     private JPanel contentPane;
     private JList<Mensaje> list; // Cambiar tipo a JList<Mensaje>
+    private JTextField textField;
 
     /**
      * Launch the application.
@@ -58,15 +61,15 @@ public class VentanaMain extends JFrame {
 
         setContentPane(contentPane);
         GridBagLayout gbl_contentPane = new GridBagLayout();
-        gbl_contentPane.columnWidths = new int[]{0, 412, 0, 598, 0, 0};
+        gbl_contentPane.columnWidths = new int[]{0, 412, 0, 598, 0, 0, 0};
         gbl_contentPane.rowHeights = new int[]{0, 364, 30, 0};
-        gbl_contentPane.columnWeights = new double[]{1.0, 1.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
+        gbl_contentPane.columnWeights = new double[]{1.0, 1.0, 1.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
         gbl_contentPane.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
         contentPane.setLayout(gbl_contentPane);
 
         JPanel panelSuperior = new JPanel();
         GridBagConstraints gbc_panelSuperior = new GridBagConstraints();
-        gbc_panelSuperior.gridwidth = 3;
+        gbc_panelSuperior.gridwidth = 4;
         gbc_panelSuperior.insets = new Insets(0, 0, 5, 5);
         gbc_panelSuperior.fill = GridBagConstraints.BOTH;
         gbc_panelSuperior.gridx = 1;
@@ -106,7 +109,8 @@ public class VentanaMain extends JFrame {
 
         JPanel conversaciones = new JPanel();
         GridBagConstraints gbc_conversaciones = new GridBagConstraints();
-        gbc_conversaciones.insets = new Insets(0, 0, 5, 5);
+        gbc_conversaciones.gridheight = 2;
+        gbc_conversaciones.insets = new Insets(0, 0, 0, 5);
         gbc_conversaciones.fill = GridBagConstraints.BOTH;
         gbc_conversaciones.gridx = 1;
         gbc_conversaciones.gridy = 1;
@@ -129,6 +133,7 @@ public class VentanaMain extends JFrame {
         JPanel chat = new JPanel();
         chat.setBackground(new Color(202, 253, 202));
         GridBagConstraints gbc_chat = new GridBagConstraints();
+        gbc_chat.gridwidth = 2;
         gbc_chat.insets = new Insets(0, 0, 5, 5);
         gbc_chat.fill = GridBagConstraints.BOTH;
         gbc_chat.gridx = 3;
@@ -149,5 +154,26 @@ public class VentanaMain extends JFrame {
 		burbuja3=new BubbleText(chat,"No estoy seguro",  
 		Color.GREEN, "J.Ramón", BubbleText.SENT, 24);
 		chat.add(burbuja3);
+		
+		JPanel panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 0, 5);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 3;
+		gbc_panel.gridy = 2;
+		contentPane.add(panel, gbc_panel);
+		panel.setLayout(new GridLayout(0, 1, 0, 0));
+		
+		textField = new JTextField();
+		panel.add(textField);
+		textField.setColumns(10);
+		
+		JButton btnSend = new JButton("");
+		GridBagConstraints gbc_btnSend = new GridBagConstraints();
+		gbc_btnSend.insets = new Insets(0, 0, 0, 5);
+		gbc_btnSend.gridx = 4;
+		gbc_btnSend.gridy = 2;
+		contentPane.add(btnSend, gbc_btnSend);
+		btnSend.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/enviar-button.png")));
     }
 }
