@@ -7,11 +7,11 @@ public class Mensaje {
     private String emoticono;
     private Date fecha;
     private String hora;
-    private Usuario emisor;
-    private Usuario receptor;
+    private String emisor;
+    private String receptor;
 
    
-    public Mensaje(String texto, Usuario emisor, Usuario receptor) {
+    public Mensaje(String texto, String emisor, String receptor) {
 		super();
 		this.texto = texto;
 		this.emisor = emisor;
@@ -19,7 +19,7 @@ public class Mensaje {
 	}
     
 
-	public Mensaje(String texto, String emoticono, Date fecha, String hora, Usuario emisor, Usuario receptor) {
+	public Mensaje(String texto, String emoticono, Date fecha, String hora, String emisor, String receptor) {
 		super();
 		this.emoticono = emoticono;
 		this.emisor = emisor;
@@ -43,11 +43,11 @@ public class Mensaje {
 		return hora;
 	}
 
-	public Usuario getEmisor() {
+	public String getEmisor() {
 		return emisor;
 	}
 
-	public Usuario getReceptor() {
+	public String getReceptor() {
 		return receptor;
 	}
 

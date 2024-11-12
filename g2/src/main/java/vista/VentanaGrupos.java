@@ -61,8 +61,8 @@ public class VentanaGrupos extends JFrame {
                                 gbc_btnMoverDerecha.gridy = 1;
                                 contentPane.add(btnMoverDerecha, gbc_btnMoverDerecha);
                 
-                        listaGrupo = new JList<>(modeloGrupo);
-                        JScrollPane scrollGrupo = new JScrollPane(listaGrupo);
+                        //listaGrupo = new JList<>(modeloGrupo);
+                        JScrollPane scrollGrupo = new JScrollPane();
                         scrollGrupo.setPreferredSize(new Dimension(100, 150));
                         GridBagConstraints gbc_scrollGrupo = new GridBagConstraints();
                         gbc_scrollGrupo.fill = GridBagConstraints.HORIZONTAL;

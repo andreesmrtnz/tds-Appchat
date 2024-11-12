@@ -122,6 +122,12 @@ public class VentanaMain extends JFrame {
         mensajeModel.addElement(new Mensaje("Alice", "Bob", "Hola Bob, ¿cómo estás?"));
         mensajeModel.addElement(new Mensaje("Bob", "Alice", "¡Hola Alice! Todo bien, ¿y tú?"));
         mensajeModel.addElement(new Mensaje("Charlie", "Alice", "¿Listo para la reunión?"));
+        mensajeModel.addElement(new Mensaje("Alice", "Bob", "Hola Bob, ¿cómo estás?"));
+        mensajeModel.addElement(new Mensaje("Bob", "Alice", "¡Hola Alice! Todo bien, ¿y tú?"));
+        mensajeModel.addElement(new Mensaje("Charlie", "Alice", "¿Listo para la reunión?"));
+        mensajeModel.addElement(new Mensaje("Alice", "Bob", "Hola Bob, ¿cómo estás?"));
+        mensajeModel.addElement(new Mensaje("Bob", "Alice", "¡Hola Alice! Todo bien, ¿y tú?"));
+        mensajeModel.addElement(new Mensaje("Charlie", "Alice", "¿Listo para la reunión?"));
 
         list = new JList<>(mensajeModel); // JList ahora usa el modelo de Mensaje
         list.setCellRenderer(new MensajeCellRenderer()); // Configurar el renderizador personalizado
