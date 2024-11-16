@@ -23,13 +23,10 @@ public abstract class FactoriaDAO {
 	protected FactoriaDAO() {
 	}
 
-	public abstract UsuarioDAO getUsuarioDAO();
-
-	public abstract MensajeDAO getMensajeDAO();
-
-	public abstract GrupoDAO getGrupoDAO();
-
-	public abstract ContactoIndividualDAO getContactoIndividualDAO();
+	public abstract IAdaptadorUsuarioDAO getUsuarioDAO();
+	public abstract IAdaptadorMensajeDAO getMensajeDAO();
+	public abstract IAdaptadorContactoIndividualDAO getContactoIndividualDAO();
+	public abstract IAdaptadorGrupoDAO getGrupoDAO();
 
 	public final static String DAO_TDS = "tds.dao.TDS_FactoriaDAO";
 }
