@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Usuario {
+	private int codigo;
     private String usuario;
     private String contraseña;
     private String telefono;
@@ -87,6 +88,16 @@ public class Usuario {
 	public List<Contacto> getContactos() {
 		return contactos;
 	}
+
+	public int getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(int codigo) {
+		this.codigo = codigo;
+	}
+
+	
     
     // Getters y Setters
 }

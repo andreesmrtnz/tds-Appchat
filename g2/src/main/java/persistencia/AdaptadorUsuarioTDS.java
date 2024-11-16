@@ -11,11 +11,11 @@ import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
 
-import modelo.Cliente;
-import modelo.Venta;
+
+import modelo.Usuario;
 
 //Usa un pool para evitar problemas doble referencia con ventas
-public class AdaptadorUsuarioTDS implements IAdaptadorClienteDAO {
+public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 	private static ServicioPersistencia servPersistencia;
 	private static AdaptadorUsuarioTDS unicaInstancia = null;
 
@@ -30,19 +30,19 @@ public class AdaptadorUsuarioTDS implements IAdaptadorClienteDAO {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
 	}
 
-	/* cuando se registra un cliente se le asigna un identificador �nico */
-	public void registrarCliente(Cliente cliente) {
-		Entidad eCliente = null;
+	/* cuando se registra un usuario se le asigna un identificador �nico */
+	public void registrarUsuario(Usuario usuario) {
+		Entidad eUsuario = null;
 
 		// Si la entidad esta registrada no la registra de nuevo
 		try {
-			eCliente = servPersistencia.recuperarEntidad(cliente.getCodigo());
+			eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
 		} catch (NullPointerException e) {}
-		if (eCliente != null) return;
+		if (eUsuario != null) return;
 
 		// registrar primero los atributos que son objetos
 		AdaptadorGrupoTDS adaptadorVenta = AdaptadorGrupoTDS.getUnicaInstancia();
-		for (Venta v : cliente.getVentas())
+		for (Usuario u : usuario.getVentas())
 			adaptadorVenta.registrarVenta(v);
 
 		// crear entidad Cliente
