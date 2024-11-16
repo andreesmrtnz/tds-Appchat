@@ -9,6 +9,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+
+import controlador.Controlador;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -26,7 +29,8 @@ public class VentanaLogin {
 
 	private JFrame frame;
 	private JPasswordField passwordField;
-	private JTextField textField;
+	private JTextField userInput;
+	private Controlador controlador;
 
 	/**
 	 * Launch the application.
@@ -48,9 +52,18 @@ public class VentanaLogin {
 	 * Create the application.
 	 */
 	public VentanaLogin() {
+		controlador = Controlador.getInstancia();
 		initialize();
 	}
-
+	
+	public void login() {
+		String user = userInput.getText();
+		char[] password = passwordField.getPassword();
+		
+		controlador.doLogin(user, password);
+		
+		
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -80,8 +93,8 @@ public class VentanaLogin {
 		JButton LoginButton = new JButton("LOGIN");
 		LoginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				VentanaMain ventanaMain = new VentanaMain();
-				ventanaMain.setVisible(true);
+				
+				login();
 			}
 		});
 		LoginButton.setBorderPainted(false);
@@ -126,16 +139,16 @@ public class VentanaLogin {
 		gbc_lblNewLabel_1.gridy = 1;
 		panel_1.add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		textField.setBackground(new Color(115, 221, 194));
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 1;
-		panel_1.add(textField, gbc_textField);
-		textField.setColumns(10);
+		userInput = new JTextField();
+		userInput.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		userInput.setBackground(new Color(115, 221, 194));
+		GridBagConstraints gbc_userInput = new GridBagConstraints();
+		gbc_userInput.insets = new Insets(0, 0, 5, 5);
+		gbc_userInput.fill = GridBagConstraints.HORIZONTAL;
+		gbc_userInput.gridx = 1;
+		gbc_userInput.gridy = 1;
+		panel_1.add(userInput, gbc_userInput);
+		userInput.setColumns(10);
 		
 		JLabel lblNewLabel_2 = new JLabel("Contraseña");
 		lblNewLabel_2.setFont(new Font("Tahoma", Font.BOLD, 20));
