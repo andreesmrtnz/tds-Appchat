@@ -1,12 +1,12 @@
 package controlador;
 
 import modelo.RepositorioUsuarios;
+import persistencia.DAOException;
 import persistencia.FactoriaDAO;
 import persistencia.IAdaptadorContactoIndividualDAO;
 import persistencia.IAdaptadorGrupoDAO;
 import persistencia.IAdaptadorMensajeDAO;
 import persistencia.IAdaptadorUsuarioDAO;
-import umu.tds.apps.persistencia.DAOException;
 
 public enum Controlador {
 
@@ -19,6 +19,8 @@ public enum Controlador {
 	private IAdaptadorMensajeDAO adaptadorMensaje;
 	private IAdaptadorGrupoDAO adaptadorGrupo;
 	private IAdaptadorContactoIndividualDAO adaptadorContactoIndividual;
+	
+	private RepositorioUsuarios repoUsuarios;
 
 	private Controlador() {
 		inicializarAdaptadores();
@@ -26,7 +28,7 @@ public enum Controlador {
 	}
 
 	void inicializarRepos() {
-		// TODO Auto-generated method stub
+		repoUsuarios = RepositorioUsuarios.getUnicaInstancia();
 
 	}
 
@@ -49,4 +51,11 @@ public enum Controlador {
 
 		return false;
 	}
+	
+	public boolean doRegister(String user, char[] passwd) {
+
+		return false;
+	}
+	
+	
 }

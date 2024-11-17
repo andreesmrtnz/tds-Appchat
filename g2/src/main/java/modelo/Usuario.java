@@ -15,9 +15,23 @@ public class Usuario {
     private Descuento descuento;
     private List<Mensaje> enviados = new ArrayList<>();
     private List<Mensaje> recibidos = new ArrayList<>();
-    private List<Contacto> contactos = new ArrayList<>();
+    private List<ContactoIndividual> contactos = new ArrayList<>();
 
-    public ContactoIndividual getContactoIndividual(Usuario otroUsuario) {
+    
+    
+    public Usuario(int codigo, String usuario, String contraseña, String telefono, Date fechaNacimiento, String imagen,
+			String saludo) {
+		super();
+		this.codigo = codigo;
+		this.usuario = usuario;
+		this.contraseña = contraseña;
+		this.telefono = telefono;
+		this.fechaNacimiento = fechaNacimiento;
+		this.imagen = imagen;
+		this.saludo = saludo;
+	}
+
+	public ContactoIndividual getContactoIndividual(Usuario otroUsuario) {
         for (Contacto contacto : contactos) {
             if (contacto instanceof ContactoIndividual && 
                 ((ContactoIndividual) contacto).getUsuario().equals(otroUsuario)) {

@@ -1,7 +1,10 @@
 package persistencia;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -32,45 +35,43 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 
 	/* cuando se registra un usuario se le asigna un identificador �nico */
 	public void registrarUsuario(Usuario usuario) {
-		Entidad eUsuario = null;
+	    Entidad eUsuario = null;
 
-		// Si la entidad esta registrada no la registra de nuevo
-		try {
-			eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
-		} catch (NullPointerException e) {}
-		if (eUsuario != null) return;
+	    // Verificar si el usuario ya está registrado para evitar duplicados
+	    try {
+	        eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
+	    } catch (NullPointerException e) {}
+	    if (eUsuario != null) return;
 
-		// registrar primero los atributos que son objetos
-		AdaptadorGrupoTDS adaptadorVenta = AdaptadorGrupoTDS.getUnicaInstancia();
-		for (Usuario u : usuario.getVentas())
-			adaptadorVenta.registrarVenta(v);
+	    // Crear una nueva entidad para el usuario
+	    eUsuario = new Entidad();
+	    eUsuario.setNombre("usuario");
+	    eUsuario.setPropiedades(new ArrayList<Propiedad>(
+	            Arrays.asList(
+	                    new Propiedad("usuario", usuario.getUsuario()),
+	                    new Propiedad("contraseña", usuario.getContraseña()),
+	                    new Propiedad("telefono", usuario.getTelefono()),
+	                    new Propiedad("fechaNacimiento", usuario.getFechaNacimiento().toString()),
+	                    new Propiedad("imagen", usuario.getImagen()),
+	                    new Propiedad("saludo", usuario.getSaludo())
+	            )));
 
-		// crear entidad Cliente
-		eCliente = new Entidad();
-		eCliente.setNombre("cliente");
-		eCliente.setPropiedades(new ArrayList<Propiedad>(
-				Arrays.asList(new Propiedad("dni", cliente.getDni()), new Propiedad("nombre", cliente.getNombre()),
-						new Propiedad("ventas", obtenerCodigosVentas(cliente.getVentas())))));
+	    // Registrar la entidad del usuario en la base de datos
+	    eUsuario = servPersistencia.registrarEntidad(eUsuario);
 
-		// registrar entidad cliente
-		eCliente = servPersistencia.registrarEntidad(eCliente);
-		// asignar identificador unico
-		// Se aprovecha el que genera el servicio de persistencia
-		cliente.setCodigo(eCliente.getId());
+	    // Asignar el identificador único al usuario (ID de persistencia)
+	    usuario.setCodigo(eUsuario.getId());
+	    
+	    PoolDAO.getUnicaInstancia().addObjeto(usuario.getCodigo(), usuario);
+	    
+	    
 	}
-
-	public void borrarCliente(Cliente cliente) {
-		// No se comprueban restricciones de integridad con Venta
-		Entidad eCliente = servPersistencia.recuperarEntidad(cliente.getCodigo());
-
-		servPersistencia.borrarEntidad(eCliente);
-	}
-
+	/*
 	public void modificarCliente(Cliente cliente) {
 
-		Entidad eCliente = servPersistencia.recuperarEntidad(cliente.getCodigo());
+		Entidad eUsuario = servPersistencia.recuperarEntidad(cliente.getCodigo());
 
-		for (Propiedad prop : eCliente.getPropiedades()) {
+		for (Propiedad prop : eUsuario.getPropiedades()) {
 			if (prop.getNombre().equals("codigo")) {
 				prop.setValor(String.valueOf(cliente.getCodigo()));
 			} else if (prop.getNombre().equals("dni")) {
@@ -85,52 +86,57 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 		}
 
 	}
+	*/
 
-	public Cliente recuperarCliente(int codigo) {
+	public Usuario recuperarUsuario(int codigo) {
+	    // Si el usuario ya está en el pool, lo devuelve directamente
+	    if (PoolDAO.getUnicaInstancia().contiene(codigo))
+	        return (Usuario) PoolDAO.getUnicaInstancia().getObjeto(codigo);
 
-		// Si la entidad est� en el pool la devuelve directamente
-		if (PoolDAO.getUnicaInstancia().contiene(codigo))
-			return (Cliente) PoolDAO.getUnicaInstancia().getObjeto(codigo);
+	    // Recuperar entidad desde el servicio de persistencia
+	    Entidad eUsuario = servPersistencia.recuperarEntidad(codigo);
 
-		// si no, la recupera de la base de datos
-		Entidad eCliente;
-		List<Venta> ventas = new LinkedList<Venta>();
-		String dni;
-		String nombre;
+	    // Recuperar propiedades básicas del usuario
+	    String usuario = servPersistencia.recuperarPropiedadEntidad(eUsuario, "usuario");
+	    String contraseña = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contraseña");
+	    String telefono = servPersistencia.recuperarPropiedadEntidad(eUsuario, "telefono");
+	    String fechaNacimientoStr = servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechaNacimiento");
+	    String imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagen");
+	    String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, "saludo");
 
-		// recuperar entidad
-		eCliente = servPersistencia.recuperarEntidad(codigo);
+	    // Convertir fecha de nacimiento de String a Date
+	    Date fechaNacimiento = null;
+	    try {
+	        fechaNacimiento = new SimpleDateFormat("yyyy-MM-dd").parse(fechaNacimientoStr);
+	    } catch (ParseException e) {
+	        e.printStackTrace(); // Manejo básico de errores
+	    }
 
-		// recuperar propiedades que no son objetos
-		dni = servPersistencia.recuperarPropiedadEntidad(eCliente, "dni");
-		nombre = servPersistencia.recuperarPropiedadEntidad(eCliente, "nombre");
+	    // Crear instancia del usuario con los datos recuperados
+	    Usuario usuarioObj = new Usuario(codigo, usuario, contraseña, telefono, fechaNacimiento, imagen, saludo);
 
-		Cliente cliente = new Cliente(dni, nombre);
-		cliente.setCodigo(codigo);
+	    // IMPORTANTE: Añadir el usuario al pool antes de recuperar contactos o mensajes
+	    PoolDAO.getUnicaInstancia().addObjeto(codigo, usuarioObj);
 
-		// IMPORTANTE:a�adir el cliente al pool antes de llamar a otros
-		// adaptadores
-		PoolDAO.getUnicaInstancia().addObjeto(codigo, cliente);
+	    // Recuperar contactos del usuario
+	    // (Opcional: Implementar lógica para manejar contactos si están relacionados con otra tabla/entidad)
 
-		// recuperar propiedades que son objetos llamando a adaptadores
-		// ventas
-		ventas = obtenerVentasDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eCliente, "ventas"));
+	    // Recuperar mensajes enviados y recibidos del usuario
+	    // (Opcional: Implementar lógica adicional si los mensajes están en otra entidad o requieren adaptadores)
 
-		for (Venta v : ventas)
-			cliente.addVenta(v);
-
-		return cliente;
+	    return usuarioObj;
 	}
 
-	public List<Cliente> recuperarTodosClientes() {
+	/*
+	public List<Cliente> recuperarTodosusuarios() {
 
-		List<Entidad> eClientes = servPersistencia.recuperarEntidades("cliente");
-		List<Cliente> clientes = new LinkedList<Cliente>();
+		List<Entidad> eUsuarios = servPersistencia.recuperarEntidades("cliente");
+		List<Cliente> usuarios = new LinkedList<Cliente>();
 
-		for (Entidad eCliente : eClientes) {
-			clientes.add(recuperarCliente(eCliente.getId()));
+		for (Entidad eUsuario : eUsuarios) {
+			usuarios.add(recuperarCliente(eUsuario.getId()));
 		}
-		return clientes;
+		return usuarios;
 	}
 
 	// -------------------Funciones auxiliares-----------------------------
@@ -152,4 +158,5 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 		}
 		return listaVentas;
 	}
+	*/
 }

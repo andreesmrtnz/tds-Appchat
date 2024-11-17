@@ -5,25 +5,25 @@ public class TDSFactoriaDAO extends FactoriaDAO {
 	}
 
 	@Override
-	public UsuarioDAO getUsuarioDAO() {
+	public IAdaptadorUsuarioDAO getUsuarioDAO() {
+		// TODO Auto-generated method stub
+		return AdaptadorUsuarioTDS.getUnicaInstancia();
+	}
+
+	@Override
+	public IAdaptadorMensajeDAO getMensajeDAO() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MensajeDAO getMensajeDAO() {
+	public IAdaptadorGrupoDAO getGrupoDAO() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public GrupoDAO getGrupoDAO() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ContactoIndividualDAO getContactoIndividualDAO() {
+	public IAdaptadorContactoIndividualDAO getContactoIndividualDAO() {
 		// TODO Auto-generated method stub
 		return null;
 	}

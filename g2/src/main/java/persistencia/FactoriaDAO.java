@@ -1,6 +1,6 @@
 package persistencia;
 
-import umu.tds.apps.persistencia.DAOException;
+
 
 public abstract class FactoriaDAO {
 	private static FactoriaDAO INSTANCE;
