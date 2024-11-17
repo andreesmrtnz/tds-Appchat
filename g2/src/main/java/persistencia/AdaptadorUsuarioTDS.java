@@ -113,7 +113,7 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 	    }
 
 	    // Crear instancia del usuario con los datos recuperados
-	    Usuario usuarioObj = new Usuario(codigo, usuario, contraseña, telefono, fechaNacimiento, imagen, saludo);
+	    Usuario usuarioObj = new Usuario(usuario, contraseña, telefono, fechaNacimiento, imagen, saludo);
 
 	    // IMPORTANTE: Añadir el usuario al pool antes de recuperar contactos o mensajes
 	    PoolDAO.getUnicaInstancia().addObjeto(codigo, usuarioObj);

@@ -1,5 +1,7 @@
 package controlador;
 
+import java.util.Date;
+
 import modelo.RepositorioUsuarios;
 import modelo.Usuario;
 import persistencia.DAOException;
@@ -61,7 +63,21 @@ public enum Controlador {
         return false; // Usuario no encontrado o contraseña incorrecta
     }
 	
-	
+	public boolean doRegister(String name, String telefono, char[] password, String saludo, Date fecha) {
+		
+		Usuario nuevoUsuario = new Usuario(name, password.toString(), telefono, fecha, telefono, saludo);
+		if (!catalogoUsuarios.contains(nuevoUsuario)) {
+			// Guarda la imagen en el proyecto
+			Theme.saveImage(imagen, Theme.PROFILE_PHOTO_NAME, nuevoUsuario.getCodigo(), 1);
+
+			// Conexion con la persistencia
+			catalogoUsuarios.addUsuario(nuevoUsuario);
+			adaptadorUsuario.registrarUsuario(nuevoUsuario);
+
+			return iniciarSesion(nick, password);
+		}
+		return false;
+	}
 	
 	
 }

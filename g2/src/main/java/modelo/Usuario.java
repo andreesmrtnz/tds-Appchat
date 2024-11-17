@@ -19,10 +19,9 @@ public class Usuario {
 
     
     
-    public Usuario(int codigo, String usuario, String contraseña, String telefono, Date fechaNacimiento, String imagen,
+    public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento, String imagen,
 			String saludo) {
 		super();
-		this.codigo = codigo;
 		this.usuario = usuario;
 		this.contraseña = contraseña;
 		this.telefono = telefono;

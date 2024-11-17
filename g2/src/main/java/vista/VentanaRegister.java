@@ -18,8 +18,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
+
+import controlador.Controlador;
+
 import javax.swing.border.MatteBorder;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 
 public class VentanaRegister extends JFrame {
@@ -30,6 +34,8 @@ public class VentanaRegister extends JFrame {
 	private JPasswordField passwordField_1;
 	private JTextField saludoField;
 	private JDateChooser dateChooser; // Agrega JDateChooser para la selección de fechas
+	private JTextField apellidosField;
+	private JTextField telefonoField;
 
 	/**
 	 * Create the frame.
@@ -42,12 +48,12 @@ public class VentanaRegister extends JFrame {
 
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{46, 120, 125, 125, 250, 190, 57, 0};
-		gbl_contentPane.rowHeights = new int[]{0, 40, 40, 40, 40, 40, 261, 52, 0, 0};
-		gbl_contentPane.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPane.columnWidths = new int[] { 46, 120, 125, 125, 250, 190, 57, 0 };
+		gbl_contentPane.rowHeights = new int[] { 0, 40, 40, 40, 40, 40, 261, 52, 0, 0 };
+		gbl_contentPane.columnWeights = new double[] { 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_contentPane.rowWeights = new double[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		contentPane.setLayout(gbl_contentPane);
-		
+
 		JLabel lblNewLabel = new JLabel("nombre:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
@@ -56,7 +62,7 @@ public class VentanaRegister extends JFrame {
 		gbc_lblNewLabel.gridx = 1;
 		gbc_lblNewLabel.gridy = 1;
 		contentPane.add(lblNewLabel, gbc_lblNewLabel);
-		
+
 		nameField = new JTextField();
 		nameField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		GridBagConstraints gbc_nameField = new GridBagConstraints();
@@ -67,34 +73,39 @@ public class VentanaRegister extends JFrame {
 		gbc_nameField.gridy = 1;
 		contentPane.add(nameField, gbc_nameField);
 		nameField.setColumns(10);
-		
+
 		JLabel lblNewLabel_1 = new JLabel("apellidos:");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+		gbc_lblNewLabel_1.fill = GridBagConstraints.VERTICAL;
+		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_1.gridx = 1;
 		gbc_lblNewLabel_1.gridy = 2;
 		contentPane.add(lblNewLabel_1, gbc_lblNewLabel_1);
-		
-		JTextArea apellidosArea = new JTextArea();
-		apellidosArea.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
-		GridBagConstraints gbc_apellidosArea = new GridBagConstraints();
-		gbc_apellidosArea.gridwidth = 4;
-		gbc_apellidosArea.insets = new Insets(0, 0, 5, 5);
-		gbc_apellidosArea.fill = GridBagConstraints.BOTH;
-		gbc_apellidosArea.gridx = 2;
-		gbc_apellidosArea.gridy = 2;
-		contentPane.add(apellidosArea, gbc_apellidosArea);
-		
+
+		apellidosField = new JTextField();
+		apellidosField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
+		GridBagConstraints gbc_apellidosField = new GridBagConstraints();
+		gbc_apellidosField.gridwidth = 4;
+		gbc_apellidosField.insets = new Insets(0, 0, 5, 5);
+		gbc_apellidosField.fill = GridBagConstraints.BOTH;
+		gbc_apellidosField.gridx = 2;
+		gbc_apellidosField.gridy = 2;
+		contentPane.add(apellidosField, gbc_apellidosField);
+		apellidosField.setColumns(10);
+
 		JLabel lblNewLabel_2 = new JLabel("telefono:");
 		lblNewLabel_2.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
+		gbc_lblNewLabel_2.fill = GridBagConstraints.VERTICAL;
+		gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_2.gridx = 1;
 		gbc_lblNewLabel_2.gridy = 3;
 		contentPane.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
-		JTextArea telefonoField = new JTextArea();
+		telefonoField = new JTextField();
 		telefonoField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		GridBagConstraints gbc_telefonoField = new GridBagConstraints();
 		gbc_telefonoField.gridwidth = 2;
@@ -103,7 +114,8 @@ public class VentanaRegister extends JFrame {
 		gbc_telefonoField.gridx = 2;
 		gbc_telefonoField.gridy = 3;
 		contentPane.add(telefonoField, gbc_telefonoField);
-		
+		telefonoField.setColumns(10);
+
 		JLabel lblNewLabel_3 = new JLabel("contraseña:");
 		lblNewLabel_3.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -113,7 +125,7 @@ public class VentanaRegister extends JFrame {
 		gbc_lblNewLabel_3.gridx = 1;
 		gbc_lblNewLabel_3.gridy = 4;
 		contentPane.add(lblNewLabel_3, gbc_lblNewLabel_3);
-		
+
 		passwordField = new JPasswordField();
 		passwordField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		GridBagConstraints gbc_passwordField = new GridBagConstraints();
@@ -123,7 +135,7 @@ public class VentanaRegister extends JFrame {
 		gbc_passwordField.gridx = 2;
 		gbc_passwordField.gridy = 4;
 		contentPane.add(passwordField, gbc_passwordField);
-		
+
 		JLabel lblNewLabel_4 = new JLabel("confirmar contraseña:");
 		lblNewLabel_4.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
@@ -132,7 +144,7 @@ public class VentanaRegister extends JFrame {
 		gbc_lblNewLabel_4.gridx = 4;
 		gbc_lblNewLabel_4.gridy = 4;
 		contentPane.add(lblNewLabel_4, gbc_lblNewLabel_4);
-		
+
 		passwordField_1 = new JPasswordField();
 		passwordField_1.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		GridBagConstraints gbc_passwordField_1 = new GridBagConstraints();
@@ -141,7 +153,7 @@ public class VentanaRegister extends JFrame {
 		gbc_passwordField_1.gridx = 5;
 		gbc_passwordField_1.gridy = 4;
 		contentPane.add(passwordField_1, gbc_passwordField_1);
-		
+
 		JLabel lblNewLabel_5 = new JLabel("fecha:");
 		lblNewLabel_5.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
@@ -149,7 +161,7 @@ public class VentanaRegister extends JFrame {
 		gbc_lblNewLabel_5.gridx = 1;
 		gbc_lblNewLabel_5.gridy = 5;
 		contentPane.add(lblNewLabel_5, gbc_lblNewLabel_5);
-		
+
 		// Usa JDateChooser para el selector de fechas
 		dateChooser = new JDateChooser();
 		dateChooser.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
@@ -161,7 +173,7 @@ public class VentanaRegister extends JFrame {
 		gbc_dateChooser.gridx = 2;
 		gbc_dateChooser.gridy = 5;
 		contentPane.add(dateChooser, gbc_dateChooser);
-		
+
 		JLabel lblNewLabel_6 = new JLabel("saludo:");
 		lblNewLabel_6.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel_6 = new GridBagConstraints();
@@ -169,7 +181,7 @@ public class VentanaRegister extends JFrame {
 		gbc_lblNewLabel_6.gridx = 1;
 		gbc_lblNewLabel_6.gridy = 6;
 		contentPane.add(lblNewLabel_6, gbc_lblNewLabel_6);
-		
+
 		saludoField = new JTextField();
 		saludoField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		GridBagConstraints gbc_saludoField = new GridBagConstraints();
@@ -180,7 +192,7 @@ public class VentanaRegister extends JFrame {
 		gbc_saludoField.gridy = 6;
 		contentPane.add(saludoField, gbc_saludoField);
 		saludoField.setColumns(10);
-		
+
 		JLabel lblNewLabel_7 = new JLabel("imagen:");
 		lblNewLabel_7.setFont(new Font("Tahoma", Font.BOLD, 20));
 		GridBagConstraints gbc_lblNewLabel_7 = new GridBagConstraints();
@@ -188,21 +200,21 @@ public class VentanaRegister extends JFrame {
 		gbc_lblNewLabel_7.gridx = 4;
 		gbc_lblNewLabel_7.gridy = 6;
 		contentPane.add(lblNewLabel_7, gbc_lblNewLabel_7);
-		
-		JLabel lblNewLabel_8 = new JLabel("");
-		lblNewLabel_8.setIcon(new ImageIcon(VentanaRegister.class.getResource("/imagen/user.png")));
-		GridBagConstraints gbc_lblNewLabel_8 = new GridBagConstraints();
-		gbc_lblNewLabel_8.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_8.gridx = 5;
-		gbc_lblNewLabel_8.gridy = 6;
-		contentPane.add(lblNewLabel_8, gbc_lblNewLabel_8);
-		
+
+		JLabel lblimage = new JLabel("");
+		lblimage.setIcon(new ImageIcon(VentanaRegister.class.getResource("/imagen/user.png")));
+		GridBagConstraints gbc_lblimage = new GridBagConstraints();
+		gbc_lblimage.insets = new Insets(0, 0, 5, 5);
+		gbc_lblimage.gridx = 5;
+		gbc_lblimage.gridy = 6;
+		contentPane.add(lblimage, gbc_lblimage);
+
 		JButton cancelButton = new JButton("CANCELAR");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				VentanaRegister.this.setVisible(false);
-				
-				
+				register();
+
 			}
 		});
 		cancelButton.setBackground(new Color(254, 190, 190));
@@ -214,7 +226,7 @@ public class VentanaRegister extends JFrame {
 		gbc_cancelButton.gridx = 2;
 		gbc_cancelButton.gridy = 7;
 		contentPane.add(cancelButton, gbc_cancelButton);
-		
+
 		JButton aceptarButton = new JButton("ACEPTAR");
 		aceptarButton.setBackground(new Color(163, 252, 187));
 		aceptarButton.setBorderPainted(false);
@@ -227,4 +239,15 @@ public class VentanaRegister extends JFrame {
 		contentPane.add(aceptarButton, gbc_aceptarButton);
 	}
 
-} 
+	public void register() {
+		String usuario = nameField.getText() + " " + apellidosField.getText();
+		String telefono = telefonoField.getText();
+		char[] password = passwordField.getPassword();
+		Date fecha = dateChooser.getDate();
+		String saludo = saludoField.getText();
+		
+		Controlador.INSTANCE.doRegister(usuario, telefono, password, saludo, fecha);
+
+	}
+
+}
