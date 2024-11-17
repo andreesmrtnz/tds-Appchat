@@ -52,7 +52,7 @@ public class VentanaLogin {
 	 * Create the application.
 	 */
 	public VentanaLogin() {
-		controlador = Controlador.getInstancia();
+		controlador = Controlador.INSTANCE;
 		initialize();
 	}
 	

@@ -30,12 +30,7 @@
       <version>1.4</version>
     </dependency>
 
-    <!-- Dependencia de tu aplicación AppChat -->
-    <dependency>
-      <groupId>umu.tds.apps</groupId>
-      <artifactId>AppChat</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
+    
 
     <!-- Dependencia de DriverPersistencia -->
     <dependency>

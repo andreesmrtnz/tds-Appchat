@@ -1,6 +1,7 @@
 package controlador;
 
 import modelo.RepositorioUsuarios;
+import modelo.Usuario;
 import persistencia.DAOException;
 import persistencia.FactoriaDAO;
 import persistencia.IAdaptadorContactoIndividualDAO;
@@ -42,20 +43,25 @@ public enum Controlador {
 			e.printStackTrace();
 		}
 		adaptadorUsuario = factoria.getUsuarioDAO();
-		adaptadorGrupo = factoria.getGrupoDAO();
-		adaptadorContactoIndividual = factoria.getContactoIndividualDAO();
-		adaptadorMensaje = factoria.getMensajeDAO();
+		//adaptadorGrupo = factoria.getGrupoDAO();
+		//adaptadorContactoIndividual = factoria.getContactoIndividualDAO();
+		//adaptadorMensaje = factoria.getMensajeDAO();
 	}
 
 	public boolean doLogin(String user, char[] passwd) {
+        Usuario usuario = repoUsuarios.getUsuarios().stream()
+                .filter(u -> u.getUsuario().equals(user) && u.getContraseña().equals(new String(passwd)))
+                .findFirst()
+                .orElse(null);
 
-		return false;
-	}
+        if (usuario != null) {
+            repoUsuarios.setUsuarioActual(usuario); // Establecer como usuario actual
+            return true;
+        }
+        return false; // Usuario no encontrado o contraseña incorrecta
+    }
 	
-	public boolean doRegister(String user, char[] passwd) {
-
-		return false;
-	}
+	
 	
 	
 }

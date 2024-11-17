@@ -22,9 +22,9 @@ public class RepositorioUsuarios {
 
     // Constructor privado para el patrón Singleton
     private RepositorioUsuarios() {
+    	factoriaDAO = FactoriaDAO.getFactoriaDAO();
         adaptadorUsuario = factoriaDAO.getUsuarioDAO();
 		usuarios = new HashMap<>();
-		cargarUsuarios();
     }
 
     // Método para obtener la única instancia del repositorio

@@ -99,7 +99,7 @@ public class Usuario {
 		return recibidos;
 	}
 
-	public List<Contacto> getContactos() {
+	public List<ContactoIndividual> getContactos() {
 		return contactos;
 	}
 
