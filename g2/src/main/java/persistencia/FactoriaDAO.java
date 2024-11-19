@@ -6,22 +6,22 @@ public abstract class FactoriaDAO {
 	private static FactoriaDAO INSTANCE;
 
 // Crea un tipo de factoria DAO. Solo existe el tipo TDS_FactoriaDAO
-	public static FactoriaDAO getFactoriaDAO(String nombre) throws DAOException {
-	    if (INSTANCE == null) {
-	        try {
-	            INSTANCE = (FactoriaDAO) Class.forName(nombre).getDeclaredConstructor().newInstance();
-	        } catch (ClassNotFoundException e) {
-	            throw new DAOException("La clase no se encontró: " + nombre);
-	        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | java.lang.reflect.InvocationTargetException e) {
-	            throw new DAOException("Error al instanciar la clase: " + nombre);
-	        }
-	    }
-	    return INSTANCE;
+	public static FactoriaDAO getInstancia(String tipo) throws DAOException {
+		if (INSTANCE == null)
+			try {
+				INSTANCE = (FactoriaDAO) Class.forName(tipo).newInstance();
+			} catch (Exception e) {
+				throw new DAOException(e.getMessage());
+			}
+		return INSTANCE;
 	}
 
 
-	public static FactoriaDAO getFactoriaDAO() {
-		return INSTANCE;
+	public static FactoriaDAO getInstancia() throws DAOException {
+		if (INSTANCE == null)
+			return getInstancia(FactoriaDAO.DAO_TDS);
+		else
+			return INSTANCE;
 	}
 
 	protected FactoriaDAO() {

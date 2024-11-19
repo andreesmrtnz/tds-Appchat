@@ -1,5 +1,6 @@
 package controlador;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import modelo.RepositorioUsuarios;
@@ -24,6 +25,8 @@ public enum Controlador {
 	private IAdaptadorContactoIndividualDAO adaptadorContactoIndividual;
 	
 	private RepositorioUsuarios repoUsuarios;
+	
+	private Usuario usuarioActual;
 
 	private Controlador() {
 		inicializarAdaptadores();
@@ -40,7 +43,7 @@ public enum Controlador {
 	public void inicializarAdaptadores() {
 		FactoriaDAO factoria = null;
 		try {
-			factoria = FactoriaDAO.getFactoriaDAO(FactoriaDAO.DAO_TDS);
+			factoria = FactoriaDAO.getInstancia(FactoriaDAO.DAO_TDS);
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
@@ -50,34 +53,45 @@ public enum Controlador {
 		//adaptadorMensaje = factoria.getMensajeDAO();
 	}
 
-	public boolean doLogin(String user, char[] passwd) {
-        Usuario usuario = repoUsuarios.getUsuarios().stream()
-                .filter(u -> u.getUsuario().equals(user) && u.getContraseña().equals(new String(passwd)))
-                .findFirst()
-                .orElse(null);
+	public boolean doLogin(String user, String passwd) {
+		if (user.isEmpty() || passwd.isEmpty())
+			return false;
 
-        if (usuario != null) {
-            repoUsuarios.setUsuarioActual(usuario); // Establecer como usuario actual
-            return true;
-        }
-        return false; // Usuario no encontrado o contraseña incorrecta
+		Usuario cliente = repoUsuarios.getUsuario(user);
+		if (cliente == null)
+			return false;
+
+		// Si la password esta bien inicia sesion
+		if (cliente.getContraseña().equals(passwd)) {
+			usuarioActual = cliente;
+
+			
+			return true;
+		}
+		return false;
     }
 	
-	public boolean doRegister(String name, String telefono, char[] password, String saludo, Date fecha) {
+	public boolean doRegister(String name, String telefono, String password, String saludo, LocalDate fecha, String image) {
 		
 		Usuario nuevoUsuario = new Usuario(name, password.toString(), telefono, fecha, telefono, saludo);
-		if (!catalogoUsuarios.contains(nuevoUsuario)) {
+		if (!repoUsuarios.contieneUsuario(nuevoUsuario)) {
 			// Guarda la imagen en el proyecto
-			Theme.saveImage(imagen, Theme.PROFILE_PHOTO_NAME, nuevoUsuario.getCodigo(), 1);
 
 			// Conexion con la persistencia
-			catalogoUsuarios.addUsuario(nuevoUsuario);
+			repoUsuarios.agregarUsuario(nuevoUsuario);
 			adaptadorUsuario.registrarUsuario(nuevoUsuario);
 
-			return iniciarSesion(nick, password);
+			return doLogin(name, password);
 		}
 		return false;
 	}
+
+	public Usuario getUsuarioActual() {
+		return usuarioActual;
+	}
+
+	
+	
 	
 	
 }

@@ -23,6 +23,8 @@ import controlador.Controlador;
 
 import javax.swing.border.MatteBorder;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 
@@ -213,7 +215,7 @@ public class VentanaRegister extends JFrame {
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				VentanaRegister.this.setVisible(false);
-				register();
+				
 
 			}
 		});
@@ -228,6 +230,14 @@ public class VentanaRegister extends JFrame {
 		contentPane.add(cancelButton, gbc_cancelButton);
 
 		JButton aceptarButton = new JButton("ACEPTAR");
+		aceptarButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				register();
+				
+			}
+		});
 		aceptarButton.setBackground(new Color(163, 252, 187));
 		aceptarButton.setBorderPainted(false);
 		aceptarButton.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -242,11 +252,25 @@ public class VentanaRegister extends JFrame {
 	public void register() {
 		String usuario = nameField.getText() + " " + apellidosField.getText();
 		String telefono = telefonoField.getText();
-		char[] password = passwordField.getPassword();
-		Date fecha = dateChooser.getDate();
+		@SuppressWarnings("deprecation")
+		String password = passwordField.getText();
+		Date selectedDate = dateChooser.getDate();
+		if (selectedDate == null) {
+		    System.out.println("La fecha no ha sido seleccionada.");
+		    return; // O maneja el caso de fecha no seleccionada
+		}
+		LocalDate fecha = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
 		String saludo = saludoField.getText();
 		
-		Controlador.INSTANCE.doRegister(usuario, telefono, password, saludo, fecha);
+		if (Controlador.INSTANCE.doRegister(usuario, telefono, password, saludo, fecha, "imagen")) {
+			JFrame ventanaMain = new JFrame();
+			ventanaMain.setVisible(true);
+		
+		}
+		else {
+			System.out.println("no registrado bien");
+		}
 
 	}
 

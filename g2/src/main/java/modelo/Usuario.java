@@ -1,5 +1,6 @@
 package modelo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +10,7 @@ public class Usuario {
     private String usuario;
     private String contraseña;
     private String telefono;
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private String imagen;
     private String saludo;
     private Descuento descuento;
@@ -19,13 +20,13 @@ public class Usuario {
 
     
     
-    public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento, String imagen,
+    public Usuario(String usuario, String contraseña, String telefono, LocalDate fecha, String imagen,
 			String saludo) {
 		super();
 		this.usuario = usuario;
 		this.contraseña = contraseña;
 		this.telefono = telefono;
-		this.fechaNacimiento = fechaNacimiento;
+		this.fechaNacimiento = fecha;
 		this.imagen = imagen;
 		this.saludo = saludo;
 	}
@@ -74,7 +75,7 @@ public class Usuario {
 		return telefono;
 	}
 
-	public Date getFechaNacimiento() {
+	public LocalDate getFechaNacimiento() {
 		return fechaNacimiento;
 	}
 

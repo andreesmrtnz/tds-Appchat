@@ -58,9 +58,18 @@ public class VentanaLogin {
 	
 	public void login() {
 		String user = userInput.getText();
-		char[] password = passwordField.getPassword();
+		@SuppressWarnings("deprecation")
+		String password = passwordField.getText();
 		
-		controlador.doLogin(user, password);
+		if (controlador.doLogin(user, password)) {
+			
+			JFrame ventanaMain = new VentanaMain();
+			ventanaMain.setVisible(true);
+			frame.setVisible(false);
+		}
+		else {
+			System.out.println("no logeado bien");
+		}
 		
 		
 	}
@@ -81,6 +90,7 @@ public class VentanaLogin {
 			public void actionPerformed(ActionEvent e) {
 				VentanaRegister ventanaRegister = new VentanaRegister();
 				ventanaRegister.setVisible(true);
+				frame.setVisible(false);
 			}
 		});
 		panel.add(RegisterButton);
