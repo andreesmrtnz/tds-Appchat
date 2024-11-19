@@ -254,18 +254,14 @@ public class VentanaRegister extends JFrame {
 		String telefono = telefonoField.getText();
 		@SuppressWarnings("deprecation")
 		String password = passwordField.getText();
-		Date selectedDate = dateChooser.getDate();
-		if (selectedDate == null) {
-		    System.out.println("La fecha no ha sido seleccionada.");
-		    return; // O maneja el caso de fecha no seleccionada
-		}
-		LocalDate fecha = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		Date fecha = dateChooser.getDate();
 
 		String saludo = saludoField.getText();
 		
 		if (Controlador.INSTANCE.doRegister(usuario, telefono, password, saludo, fecha, "imagen")) {
-			JFrame ventanaMain = new JFrame();
+			JFrame ventanaMain = new VentanaMain();
 			ventanaMain.setVisible(true);
+			this.setVisible(false);
 		
 		}
 		else {

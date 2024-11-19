@@ -71,7 +71,7 @@ public enum Controlador {
 		return false;
     }
 	
-	public boolean doRegister(String name, String telefono, String password, String saludo, LocalDate fecha, String image) {
+	public boolean doRegister(String name, String telefono, String password, String saludo, Date fecha, String image) {
 		
 		Usuario nuevoUsuario = new Usuario(name, password.toString(), telefono, fecha, telefono, saludo);
 		if (!repoUsuarios.contieneUsuario(nuevoUsuario)) {

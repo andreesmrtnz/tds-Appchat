@@ -45,6 +45,8 @@ public class RepositorioUsuarios {
     // Método para agregar un usuario al repositorio y persistirlo
     public void agregarUsuario(Usuario usuario) {
     	usuarios.put(usuario.getUsuario(), usuario);
+    	System.out.println("los usuarios por el momento son: "+ usuarios);
+    	
     }
 
     // Método para obtener todos los usuarios en memoria

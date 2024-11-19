@@ -19,109 +19,109 @@ import modelo.Usuario;
 
 //Usa un pool para evitar problemas doble referencia con ventas
 public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
-	private static ServicioPersistencia servPersistencia;
-	private static AdaptadorUsuarioTDS unicaInstancia = null;
+    private static ServicioPersistencia servPersistencia;
+    private static AdaptadorUsuarioTDS unicaInstancia = null;
 
-	public static AdaptadorUsuarioTDS getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null)
-			return new AdaptadorUsuarioTDS();
-		else
-			return unicaInstancia;
-	}
+    private final SimpleDateFormat dateFormat; // Para formatear fechas en la base de datos
 
-	private AdaptadorUsuarioTDS() {
-		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
-	}
+    // Singleton con doble verificación
+    public static AdaptadorUsuarioTDS getUnicaInstancia() {
+        if (unicaInstancia == null) {
+            synchronized (AdaptadorUsuarioTDS.class) {
+                if (unicaInstancia == null) {
+                    unicaInstancia = new AdaptadorUsuarioTDS();
+                }
+            }
+        }
+        return unicaInstancia;
+    }
 
-	/* cuando se registra un usuario se le asigna un identificador �nico */
-	public void registrarUsuario(Usuario usuario) {
-		Entidad eUsuario = new Entidad();
-		boolean existe = true;
+    private AdaptadorUsuarioTDS() {
+        servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    }
 
-		// Si la entidad está registrada no la registra de nuevo
-		try {
+    // Registra un usuario en la base de datos, asignando un identificador único
+    public void registrarUsuario(Usuario usuario) {
+        if (PoolDAO.getUnicaInstancia().contiene(usuario.getCodigo())) {
+            return; // Si ya está en el pool, no se registra de nuevo
+        }
+
+        Entidad eUsuario = null;
+
+        try {
 			eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
-		} catch (NullPointerException e) {
-			existe = false;
-		}
-		if (existe) {
-			return;
-		}
+		} catch (NullPointerException e) {}
+		if (eUsuario != null)	return;
 
-		// Atributos propios del usuario
-		eUsuario.setNombre("usuario");
-		eUsuario.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("nombre", usuario.getUsuario()),
-				new Propiedad("fechanacimiento", usuario.getFechaNacimiento().toString()),
-				new Propiedad("telefono", String.valueOf(usuario.getTelefono())),
-				new Propiedad("password", usuario.getContraseña()), new Propiedad("imagenes", usuario.getImagen()),
-				new Propiedad("saludo", usuario.getSaludo()))));
+        // Crear entidad usuario con sus propiedades
+        eUsuario = new Entidad();
+        eUsuario.setNombre("usuario");
+        eUsuario.setPropiedades(new ArrayList<>(Arrays.asList(
+                new Propiedad("nombre", usuario.getUsuario()),
+                new Propiedad("fechanacimiento", dateFormat.format(usuario.getFechaNacimiento())),
+                new Propiedad("telefono", String.valueOf(usuario.getTelefono())),
+                new Propiedad("password", usuario.getContraseña()),
+                new Propiedad("imagenes", usuario.getImagen()),
+                new Propiedad("saludo", usuario.getSaludo())
+        )));
 
-		// Registrar entidad usuario
-		eUsuario = servPersistencia.registrarEntidad(eUsuario);
+        // Registrar la entidad usuario en el servicio de persistencia
+        eUsuario = servPersistencia.registrarEntidad(eUsuario);
 
-		// Identificador unico
-		usuario.setCodigo(eUsuario.getId());
+        // Asignar el identificador único al usuario
+        usuario.setCodigo(eUsuario.getId());
 
-		// Guardamos en el pool
-		PoolDAO.getUnicaInstancia().addObjeto(usuario.getCodigo(), usuario);
+        // Añadir al pool para evitar duplicados en memoria
+        PoolDAO.getUnicaInstancia().addObjeto(usuario.getCodigo(), usuario);
+    }
 
-	}
-	/*
-	 * public void modificarCliente(Cliente cliente) {
-	 * 
-	 * Entidad eUsuario = servPersistencia.recuperarEntidad(cliente.getCodigo());
-	 * 
-	 * for (Propiedad prop : eUsuario.getPropiedades()) { if
-	 * (prop.getNombre().equals("codigo")) {
-	 * prop.setValor(String.valueOf(cliente.getCodigo())); } else if
-	 * (prop.getNombre().equals("dni")) { prop.setValor(cliente.getDni()); } else if
-	 * (prop.getNombre().equals("nombre")) { prop.setValor(cliente.getNombre()); }
-	 * else if (prop.getNombre().equals("ventas")) { String ventas =
-	 * obtenerCodigosVentas(cliente.getVentas()); prop.setValor(ventas); }
-	 * servPersistencia.modificarPropiedad(prop); }
-	 * 
-	 * }
-	 */
+    public Usuario recuperarUsuario(int codigo) {
+        // Si el usuario ya está en el pool, devolverlo directamente
+        if (PoolDAO.getUnicaInstancia().contiene(codigo)) {
+            return (Usuario) PoolDAO.getUnicaInstancia().getObjeto(codigo);
+        }
 
-	public Usuario recuperarUsuario(int codigo) {
-		// Si la entidad esta en el pool la devuelve directamente
-		if (PoolDAO.getUnicaInstancia().contiene(codigo))
-			return (Usuario) PoolDAO.getUnicaInstancia().getObjeto(codigo);
+        // Recuperar la entidad del servicio de persistencia
+        Entidad eUsuario = servPersistencia.recuperarEntidad(codigo);
 
-		// si no, la recupera de la base de datos
-		// recuperar entidad
-		Entidad eUser = servPersistencia.recuperarEntidad(codigo);
+        // Recuperar las propiedades de la entidad
+        String nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre");
 
-		// recuperar propiedades que no son objetos
-		// fecha
-		String nombre = servPersistencia.recuperarPropiedadEntidad(eUser, "nombre");
-		LocalDate fechaNacimiento = LocalDate
-				.parse(servPersistencia.recuperarPropiedadEntidad(eUser, "fechanacimiento"));
-		String telefono = servPersistencia.recuperarPropiedadEntidad(eUser, "telefono");
-		String password = servPersistencia.recuperarPropiedadEntidad(eUser, "password");
-		String saludo = servPersistencia.recuperarPropiedadEntidad(eUser, "saludo");
-		
-		String pathImages = servPersistencia.recuperarPropiedadEntidad(eUser, "imagenes");
+        Date fechaNacimiento = null;
+        try {
+            String fechaTexto = servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechanacimiento");
+            if (fechaTexto != null && !fechaTexto.isEmpty()) {
+                fechaNacimiento = dateFormat.parse(fechaTexto);
+            }
+        } catch (ParseException e) {
+            System.err.println("Error al parsear la fecha de nacimiento para el usuario con código: " + codigo);
+            fechaNacimiento = new Date(); // Fecha por defecto si hay error
+        }
 
-		Usuario usuario = new Usuario(nombre, password, telefono, fechaNacimiento, pathImages, saludo);
-		usuario.setCodigo(codigo);
+        String telefono = servPersistencia.recuperarPropiedadEntidad(eUsuario, "telefono");
+        String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, "password");
+        String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, "saludo");
+        String pathImages = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagenes");
 
-		// Metemos el usuario en el pool antes de llamar a otros
-		// adaptadores
-		PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
+        // Crear objeto Usuario
+        Usuario usuario = new Usuario(nombre, password, telefono, fechaNacimiento, pathImages, saludo);
+        usuario.setCodigo(codigo);
 
-		// devolver el objeto usuario con todo
-		return usuario;
-	}
+        // Añadir al pool
+        PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
 
-	@Override
-	public List<Usuario> recuperarTodosUsuarios() {
-		List<Usuario> usuarios = new LinkedList<>();
-		List<Entidad> eUsuarios = servPersistencia.recuperarEntidades("usuario");
+        return usuario;
+    }
 
-		for (Entidad eUsuario : eUsuarios) {
-			usuarios.add(recuperarUsuario(eUsuario.getId()));
-		}
-		return usuarios;
-	}
+    @Override
+    public List<Usuario> recuperarTodosUsuarios() {
+        List<Usuario> usuarios = new LinkedList<>();
+        List<Entidad> eUsuarios = servPersistencia.recuperarEntidades("usuario");
+
+        for (Entidad eUsuario : eUsuarios) {
+            usuarios.add(recuperarUsuario(eUsuario.getId()));
+        }
+        return usuarios;
+    }
 }
