@@ -2,6 +2,7 @@ package controlador;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Optional;
 
 import modelo.RepositorioUsuarios;
 import modelo.Usuario;
@@ -53,13 +54,20 @@ public enum Controlador {
 		//adaptadorMensaje = factoria.getMensajeDAO();
 	}
 
-	public boolean doLogin(String user, String passwd) {
-		if (user.isEmpty() || passwd.isEmpty())
+	public boolean doLogin(String telefono, String passwd) {
+		if (telefono.isEmpty() || passwd.isEmpty())
 			return false;
 
-		Usuario cliente = repoUsuarios.getUsuario(user);
+		/*Usuario cliente = repoUsuarios.getUsuario(telefono);
 		if (cliente == null)
-			return false;
+			return false;*/
+		 Optional<Usuario> clienteOpt = repoUsuarios.getUsuarioPorTelefono(telefono);
+		    if (clienteOpt.isEmpty()) {
+		        System.out.println("Usuario no encontrado para el teléfono: " + telefono);
+		        return false;
+		    }
+
+		    Usuario cliente = clienteOpt.get();
 
 		// Si la password esta bien inicia sesion
 		if (cliente.getContraseña().equals(passwd)) {
