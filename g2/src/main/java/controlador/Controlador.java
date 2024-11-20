@@ -89,7 +89,7 @@ public enum Controlador {
 			repoUsuarios.agregarUsuario(nuevoUsuario);
 			adaptadorUsuario.registrarUsuario(nuevoUsuario);
 
-			return doLogin(name, password);
+			return doLogin(telefono, password);
 		}
 		return false;
 	}
