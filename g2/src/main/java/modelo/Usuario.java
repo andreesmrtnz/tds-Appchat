@@ -20,8 +20,7 @@ public class Usuario {
 
     
     
-    public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen,
-			String saludo) {
+    public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen, String saludo) {
 		super();
 		this.usuario = usuario;
 		this.contraseña = contraseña;

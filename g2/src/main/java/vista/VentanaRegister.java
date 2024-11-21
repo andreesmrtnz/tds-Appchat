@@ -10,6 +10,8 @@ import java.awt.Image;
 import javax.swing.JTextField;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Insets;
 import java.awt.Font;
 import javax.swing.JTextArea;
@@ -283,25 +285,57 @@ public class VentanaRegister extends JFrame {
 	}
 
 	public void register() {
-		String usuario = nameField.getText() + " " + apellidosField.getText();
-		String telefono = telefonoField.getText();
-		@SuppressWarnings("deprecation")
-		String password = passwordField.getText();
-		Date fecha = dateChooser.getDate();
+	    if (!validarCampos()) {
+	        return; // Detener si las validaciones fallan
+	    }
 
-		String saludo = saludoField.getText();
-		
-		if (Controlador.INSTANCE.doRegister(usuario, telefono, password, saludo, fecha, "imagen")) {
-			JFrame ventanaMain = new VentanaMain();
-			ventanaMain.setVisible(true);
-			this.setVisible(false);
-		
-		}
-		else {
-			System.out.println("no registrado bien");
-		}
+	    String usuario = nameField.getText().trim() + " " + apellidosField.getText().trim();
+	    String telefono = telefonoField.getText().trim();
+	    @SuppressWarnings("deprecation")
+	    String password = passwordField.getText().trim();
+	    Date fecha = dateChooser.getDate();
+	    String saludo = saludoField.getText().trim();
+	    String url = urlField.getText();
 
+	    if (Controlador.INSTANCE.doRegister(usuario, telefono, password, saludo, fecha, url)) {
+	        JFrame ventanaMain = new VentanaMain();
+	        ventanaMain.setVisible(true);
+	        this.setVisible(false);
+	    } else {
+	        mostrarError("Error al registrar el usuario. Por favor, inténtelo de nuevo.");
+	    }
 	}
+	
+	private boolean validarCampos() {
+	    String nombre = nameField.getText().trim();
+	    String apellidos = apellidosField.getText().trim();
+	    String telefono = telefonoField.getText().trim();
+	    @SuppressWarnings("deprecation")
+	    String password = passwordField.getText().trim();
+	    @SuppressWarnings("deprecation")
+	    String confirmPassword = passwordField_1.getText().trim();
+
+	    // Validar campos obligatorios
+	    if (nombre.isEmpty() || apellidos.isEmpty() || telefono.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+	        mostrarError("Todos los campos obligatorios deben completarse (excepto fecha de nacimiento e imagen).");
+	        return false;
+	    }
+
+	    // Validar que las contraseñas coincidan
+	    if (!password.equals(confirmPassword)) {
+	        mostrarError("Las contraseñas no coinciden. Por favor, revisa los valores.");
+	        return false;
+	    }
+
+	    return true; // Validaciones exitosas
+	}
+
+	
+	private void mostrarError(String mensaje) {
+	    JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+
+
 	
 	private void setDefaultImage(JLabel lblimage) {
 	    ImageIcon defaultIcon = new ImageIcon(VentanaRegister.class.getResource("/imagen/user.png"));

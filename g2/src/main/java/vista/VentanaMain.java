@@ -7,6 +7,7 @@ import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.URL;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -27,6 +28,8 @@ import modelo.Mensaje;
 import tds.BubbleText;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Image;
+
 import javax.swing.JTextField;
 
 public class VentanaMain extends JFrame {
@@ -107,7 +110,7 @@ public class VentanaMain extends JFrame {
         panelSuperior.add(btnNewButton_4);
 
         JLabel imagenPerfilLabel = new JLabel(controlador.getUsuarioActual().getUsuario());
-        imagenPerfilLabel.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/contrasena.png")));
+        cargarImagenPerfilURL(imagenPerfilLabel, controlador.getUsuarioActual().getImagen());
         panelSuperior.add(imagenPerfilLabel);
 
         JPanel conversaciones = new JPanel();
@@ -185,4 +188,30 @@ public class VentanaMain extends JFrame {
 		contentPane.add(btnSend, gbc_btnSend);
 		btnSend.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/enviar-button.png")));
     }
+    
+    private void cargarImagenPerfilURL(JLabel lblimage, String url) {
+	    String urlText = url; // Leer el texto del campo
+	    if (!urlText.isEmpty()) {
+	        try {
+	            URL imageUrl = new URL(urlText); // Intentar cargar la URL
+	            ImageIcon icon = new ImageIcon(imageUrl);
+	            lblimage.setIcon(resizeImageIcon(icon, 32, 32)); // Redimensionar la imagen
+	        } catch (Exception ex) {
+	            setDefaultImage(lblimage);
+	        }
+	    } else {
+	        setDefaultImage(lblimage); // Si no hay texto, usar la imagen por defecto
+	    }
+	}
+    
+    private void setDefaultImage(JLabel lblimage) {
+	    ImageIcon defaultIcon = new ImageIcon(VentanaRegister.class.getResource("/imagen/user.png"));
+	    lblimage.setIcon(resizeImageIcon(defaultIcon, 32, 32)); // Redimensionar a 32
+	}
+	
+	private ImageIcon resizeImageIcon(ImageIcon icon, int width, int height) {
+	    Image image = icon.getImage();
+	    Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH); // Escalado suave
+	    return new ImageIcon(scaledImage);
+	}
 }

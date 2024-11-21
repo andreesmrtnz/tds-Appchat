@@ -81,7 +81,7 @@ public enum Controlador {
 	
 	public boolean doRegister(String name, String telefono, String password, String saludo, Date fecha, String image) {
 		
-		Usuario nuevoUsuario = new Usuario(name, password.toString(), telefono, fecha, telefono, saludo);
+		Usuario nuevoUsuario = new Usuario(name, password.toString(), telefono, fecha, image, saludo);
 		if (!repoUsuarios.contieneUsuario(nuevoUsuario)) {
 			// Guarda la imagen en el proyecto
 
