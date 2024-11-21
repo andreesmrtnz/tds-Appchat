@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.border.EmptyBorder;
 
+import controlador.Controlador;
 import modelo.Mensaje;
 import tds.BubbleText;
 import java.awt.Color;
@@ -33,6 +34,7 @@ public class VentanaMain extends JFrame {
     private JPanel contentPane;
     private JList<Mensaje> list; // Cambiar tipo a JList<Mensaje>
     private JTextField textField;
+    private Controlador controlador;
 
     /**
      * Launch the application.
@@ -54,6 +56,7 @@ public class VentanaMain extends JFrame {
      * Create the frame.
      */
     public VentanaMain() {
+    	controlador = Controlador.INSTANCE;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1141, 485);
         contentPane = new JPanel();
@@ -103,7 +106,7 @@ public class VentanaMain extends JFrame {
         btnNewButton_4.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/premium.png")));
         panelSuperior.add(btnNewButton_4);
 
-        JLabel imagenPerfilLabel = new JLabel("IMAGEN");
+        JLabel imagenPerfilLabel = new JLabel(controlador.getUsuarioActual().getUsuario());
         imagenPerfilLabel.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/contrasena.png")));
         panelSuperior.add(imagenPerfilLabel);
 
