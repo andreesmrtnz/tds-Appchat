@@ -5,6 +5,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridBagLayout;
+import java.awt.Image;
+
 import javax.swing.JTextField;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
@@ -23,6 +25,7 @@ import controlador.Controlador;
 
 import javax.swing.border.MatteBorder;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -38,6 +41,7 @@ public class VentanaRegister extends JFrame {
 	private JDateChooser dateChooser; // Agrega JDateChooser para la selección de fechas
 	private JTextField apellidosField;
 	private JTextField telefonoField;
+	private JTextField urlField;
 
 	/**
 	 * Create the frame.
@@ -50,9 +54,9 @@ public class VentanaRegister extends JFrame {
 
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[] { 46, 120, 125, 125, 250, 190, 57, 0 };
+		gbl_contentPane.columnWidths = new int[] { 46, 120, 125, 125, 250, 190, 0, 57, 0 };
 		gbl_contentPane.rowHeights = new int[] { 0, 40, 40, 40, 40, 40, 261, 52, 0, 0 };
-		gbl_contentPane.columnWeights = new double[] { 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_contentPane.columnWeights = new double[] { 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE };
 		gbl_contentPane.rowWeights = new double[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		contentPane.setLayout(gbl_contentPane);
 
@@ -68,7 +72,7 @@ public class VentanaRegister extends JFrame {
 		nameField = new JTextField();
 		nameField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		GridBagConstraints gbc_nameField = new GridBagConstraints();
-		gbc_nameField.gridwidth = 4;
+		gbc_nameField.gridwidth = 5;
 		gbc_nameField.insets = new Insets(0, 0, 5, 5);
 		gbc_nameField.fill = GridBagConstraints.BOTH;
 		gbc_nameField.gridx = 2;
@@ -89,7 +93,7 @@ public class VentanaRegister extends JFrame {
 		apellidosField = new JTextField();
 		apellidosField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		GridBagConstraints gbc_apellidosField = new GridBagConstraints();
-		gbc_apellidosField.gridwidth = 4;
+		gbc_apellidosField.gridwidth = 5;
 		gbc_apellidosField.insets = new Insets(0, 0, 5, 5);
 		gbc_apellidosField.fill = GridBagConstraints.BOTH;
 		gbc_apellidosField.gridx = 2;
@@ -150,6 +154,7 @@ public class VentanaRegister extends JFrame {
 		passwordField_1 = new JPasswordField();
 		passwordField_1.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		GridBagConstraints gbc_passwordField_1 = new GridBagConstraints();
+		gbc_passwordField_1.gridwidth = 2;
 		gbc_passwordField_1.insets = new Insets(0, 0, 5, 5);
 		gbc_passwordField_1.fill = GridBagConstraints.BOTH;
 		gbc_passwordField_1.gridx = 5;
@@ -204,8 +209,9 @@ public class VentanaRegister extends JFrame {
 		contentPane.add(lblNewLabel_7, gbc_lblNewLabel_7);
 
 		JLabel lblimage = new JLabel("");
-		lblimage.setIcon(new ImageIcon(VentanaRegister.class.getResource("/imagen/user.png")));
+		setDefaultImage(lblimage);
 		GridBagConstraints gbc_lblimage = new GridBagConstraints();
+		gbc_lblimage.gridwidth = 2;
 		gbc_lblimage.insets = new Insets(0, 0, 5, 5);
 		gbc_lblimage.gridx = 5;
 		gbc_lblimage.gridy = 6;
@@ -224,6 +230,7 @@ public class VentanaRegister extends JFrame {
 		cancelButton.setFont(new Font("Tahoma", Font.BOLD, 20));
 		cancelButton.setMargin(new Insets(10, 20, 10, 20));
 		GridBagConstraints gbc_cancelButton = new GridBagConstraints();
+		gbc_cancelButton.fill = GridBagConstraints.VERTICAL;
 		gbc_cancelButton.insets = new Insets(0, 0, 5, 5);
 		gbc_cancelButton.gridx = 2;
 		gbc_cancelButton.gridy = 7;
@@ -243,10 +250,36 @@ public class VentanaRegister extends JFrame {
 		aceptarButton.setFont(new Font("Tahoma", Font.BOLD, 20));
 		aceptarButton.setMargin(new Insets(10, 20, 10, 20));
 		GridBagConstraints gbc_aceptarButton = new GridBagConstraints();
+		gbc_aceptarButton.fill = GridBagConstraints.VERTICAL;
 		gbc_aceptarButton.insets = new Insets(0, 0, 5, 5);
 		gbc_aceptarButton.gridx = 3;
 		gbc_aceptarButton.gridy = 7;
 		contentPane.add(aceptarButton, gbc_aceptarButton);
+		
+		urlField = new JTextField();
+		urlField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
+		GridBagConstraints gbc_urlField = new GridBagConstraints();
+		gbc_urlField.insets = new Insets(0, 0, 5, 5);
+		gbc_urlField.fill = GridBagConstraints.BOTH;
+		gbc_urlField.gridx = 5;
+		gbc_urlField.gridy = 7;
+		contentPane.add(urlField, gbc_urlField);
+		urlField.setColumns(10);
+		
+		JButton updateImageButton = new JButton("");
+		updateImageButton.setIcon(new ImageIcon(VentanaRegister.class.getResource("/imagen/actualizacion-del-perfil.png")));
+		updateImageButton.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        updateImageFromURL(lblimage); // Llamar al método de actualización
+		    }
+		});
+		GridBagConstraints gbc_updateImageButton = new GridBagConstraints();
+		gbc_updateImageButton.fill = GridBagConstraints.VERTICAL;
+		gbc_updateImageButton.insets = new Insets(0, 0, 5, 5);
+		gbc_updateImageButton.gridx = 6;
+		gbc_updateImageButton.gridy = 7;
+		contentPane.add(updateImageButton, gbc_updateImageButton);
 	}
 
 	public void register() {
@@ -269,5 +302,36 @@ public class VentanaRegister extends JFrame {
 		}
 
 	}
+	
+	private void setDefaultImage(JLabel lblimage) {
+	    ImageIcon defaultIcon = new ImageIcon(VentanaRegister.class.getResource("/imagen/user.png"));
+	    lblimage.setIcon(resizeImageIcon(defaultIcon, 128, 128)); // Redimensionar a 128x128
+	}
+	
+	private void updateImageFromURL(JLabel lblimage) {
+	    String urlText = urlField.getText().trim(); // Leer el texto del campo
+	    if (!urlText.isEmpty()) {
+	        try {
+	            URL imageUrl = new URL(urlText); // Intentar cargar la URL
+	            ImageIcon icon = new ImageIcon(imageUrl);
+	            lblimage.setIcon(resizeImageIcon(icon, 128, 128)); // Redimensionar la imagen
+	            System.out.println("Imagen actualizada correctamente desde la URL.");
+	        } catch (Exception ex) {
+	            System.err.println("No se pudo cargar la imagen desde la URL proporcionada. Mostrando imagen por defecto.");
+	            setDefaultImage(lblimage);
+	        }
+	    } else {
+	        setDefaultImage(lblimage); // Si no hay texto, usar la imagen por defecto
+	    }
+	}
+	
+	private ImageIcon resizeImageIcon(ImageIcon icon, int width, int height) {
+	    Image image = icon.getImage();
+	    Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH); // Escalado suave
+	    return new ImageIcon(scaledImage);
+	}
+
+
+
 
 }

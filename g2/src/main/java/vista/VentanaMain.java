@@ -84,15 +84,15 @@ public class VentanaMain extends JFrame {
         panelSuperior.add(comboBox);
 
         JButton enviarBarraButton = new JButton("");
-        enviarBarraButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/enviar.png")));
+        enviarBarraButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/send.png")));
         panelSuperior.add(enviarBarraButton);
 
         JButton searchButton = new JButton("");
-        searchButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/search-engine-optimization.png")));
+        searchButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/search-engine.png")));
         panelSuperior.add(searchButton);
 
         JButton contactosButton = new JButton("Contactos");
-        contactosButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/trabajo-en-equipo.png")));
+        contactosButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/grupo.png")));
         panelSuperior.add(contactosButton);
 
         Component horizontalGlue = Box.createHorizontalGlue();
@@ -100,7 +100,7 @@ public class VentanaMain extends JFrame {
         panelSuperior.add(horizontalGlue);
 
         JButton btnNewButton_4 = new JButton("Premium");
-        btnNewButton_4.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/calidad-premium.png")));
+        btnNewButton_4.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/premium.png")));
         panelSuperior.add(btnNewButton_4);
 
         JLabel imagenPerfilLabel = new JLabel("IMAGEN");
