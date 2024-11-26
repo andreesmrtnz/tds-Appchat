@@ -110,7 +110,13 @@ public class Usuario {
 		this.codigo = codigo;
 	}
 
+	public void addContacto(ContactoIndividual contacto) {
+		contactos.add(contacto);
+	}
 	
+	public boolean tieneContacto(String telefono) {
+		return contactos.stream().anyMatch(c -> c instanceof ContactoIndividual && c.getNombre().equals(telefono));
+	}
     
     // Getters y Setters
 }

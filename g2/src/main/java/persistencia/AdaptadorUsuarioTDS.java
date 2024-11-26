@@ -113,6 +113,33 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 
         return usuario;
     }
+    
+    @Override
+    public void modificarUsuario(Usuario user) {
+        Entidad eUser = servPersistencia.recuperarEntidad(user.getCodigo());
+
+        // Modificar las propiedades del usuario en la entidad
+        servPersistencia.eliminarPropiedadEntidad(eUser, "nombre");
+        servPersistencia.anadirPropiedadEntidad(eUser, "nombre", user.getUsuario());
+
+        servPersistencia.eliminarPropiedadEntidad(eUser, "fechanacimiento");
+        servPersistencia.anadirPropiedadEntidad(eUser, "fechanacimiento", user.getFechaNacimiento() != null 
+                ? dateFormat.format(user.getFechaNacimiento()) 
+                : "");
+
+        servPersistencia.eliminarPropiedadEntidad(eUser, "telefono");
+        servPersistencia.anadirPropiedadEntidad(eUser, "telefono", user.getTelefono());
+
+        servPersistencia.eliminarPropiedadEntidad(eUser, "password");
+        servPersistencia.anadirPropiedadEntidad(eUser, "password", user.getContraseña());
+
+        servPersistencia.eliminarPropiedadEntidad(eUser, "saludo");
+        servPersistencia.anadirPropiedadEntidad(eUser, "saludo", user.getSaludo());
+
+        servPersistencia.eliminarPropiedadEntidad(eUser, "imagenes");
+        servPersistencia.anadirPropiedadEntidad(eUser, "imagenes", user.getImagen());
+    }
+
 
     @Override
     public List<Usuario> recuperarTodosUsuarios() {

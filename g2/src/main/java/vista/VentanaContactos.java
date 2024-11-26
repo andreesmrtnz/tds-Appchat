@@ -10,8 +10,10 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class VentanaGrupos extends JFrame {
+public class VentanaContactos extends JFrame {
 
     private JList<String> listaContactos;
     private JList<String> listaGrupo;
@@ -20,7 +22,7 @@ public class VentanaGrupos extends JFrame {
     private JButton btnMoverDerecha;
     private JButton btnMoverIzquierda;
 
-    public VentanaGrupos() {
+    public VentanaContactos() {
         setTitle("Gestión de Grupos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 300);
@@ -73,6 +75,14 @@ public class VentanaGrupos extends JFrame {
                 
                         // Botón Añadir Contacto
                         btnAgregarContacto = new JButton("Añadir Contacto");
+                        btnAgregarContacto.addActionListener(new ActionListener() {
+                        	public void actionPerformed(ActionEvent e) {
+                        		JFrame agregarContacto = new AlertaAgregarContacto();
+                        		agregarContacto.setVisible(true);
+                        		setVisible(false);
+                        		
+                        	}
+                        });
                         GridBagConstraints gbc_btnAgregarContacto = new GridBagConstraints();
                         gbc_btnAgregarContacto.fill = GridBagConstraints.HORIZONTAL;
                         gbc_btnAgregarContacto.insets = new Insets(0, 0, 5, 5);
@@ -104,7 +114,7 @@ public class VentanaGrupos extends JFrame {
     }
 
     public static void main(String[] args) {
-        VentanaGrupos ventana = new VentanaGrupos();
+        VentanaContactos ventana = new VentanaContactos();
         ventana.setVisible(true);
     }
 }

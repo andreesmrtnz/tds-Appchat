@@ -10,93 +10,121 @@ import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
 
-import modelo.Producto;
+import modelo.ContactoIndividual;
+import modelo.Usuario;
 
-public class AdaptadorContactoIndividualTDS implements IAdaptadorProductoDAO {
+public class AdaptadorContactoIndividualTDS implements IAdaptadorContactoIndividualDAO {
 
-	private static ServicioPersistencia servPersistencia;
-	private static AdaptadorContactoIndividualTDS unicaInstancia = null;
+    private static ServicioPersistencia servPersistencia;
+    private static AdaptadorContactoIndividualTDS unicaInstancia = null;
 
-	public static AdaptadorContactoIndividualTDS getUnicaInstancia() { // patron singleton
-		if (unicaInstancia == null) {
-			return new AdaptadorContactoIndividualTDS();
-		} else
-			return unicaInstancia;
-	}
+    public static AdaptadorContactoIndividualTDS getUnicaInstancia() { // patrón Singleton
+        if (unicaInstancia == null) {
+            return new AdaptadorContactoIndividualTDS();
+        } else {
+            return unicaInstancia;
+        }
+    }
 
-	private AdaptadorContactoIndividualTDS() { 
-		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
-	}
+    private AdaptadorContactoIndividualTDS() {
+        servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
+    }
 
-	/* cuando se registra un producto se le asigna un identificador unico */
-	public void registrarProducto(Producto producto) {
-		Entidad eProducto = null;
-		try {
-			eProducto = servPersistencia.recuperarEntidad(producto.getCodigo());
-		} catch (NullPointerException e) {}
-		if (eProducto != null) return;
-		
-		// crear entidad producto
-		eProducto = new Entidad();
-		eProducto.setNombre("producto");
-		eProducto.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("nombre", producto.getNombre()),
-				new Propiedad("descripcion", producto.getDescripcion()),
-				new Propiedad("precio", String.valueOf(producto.getPrecio())))));
-		
-		// registrar entidad producto
-		eProducto = servPersistencia.registrarEntidad(eProducto);
-		// asignar identificador unico
-		// Se aprovecha el que genera el servicio de persistencia
-		producto.setCodigo(eProducto.getId());  
-	}
-
-	public void borrarProducto(Producto producto) {
-		// No se comprueba integridad con lineas de venta
-		Entidad eProducto = servPersistencia.recuperarEntidad(producto.getCodigo());
-		servPersistencia.borrarEntidad(eProducto);
-	}
-
-	public void modificarProducto(Producto producto) {
-		Entidad eProducto = servPersistencia.recuperarEntidad(producto.getCodigo());
-
-		for (Propiedad prop : eProducto.getPropiedades()) {
-			if (prop.getNombre().equals("codigo")) {
-				prop.setValor(String.valueOf(producto.getCodigo()));
-			} else if (prop.getNombre().equals("precio")) {
-				prop.setValor(String.valueOf(producto.getPrecio()));
-			} else if (prop.getNombre().equals("nombre")) {
-				prop.setValor(producto.getNombre());
-			} else if (prop.getNombre().equals("descripcion")) {
-				prop.setValor(producto.getDescripcion());
-			} 
-			servPersistencia.modificarPropiedad(prop);
+    @Override
+    public void registrarContacto(ContactoIndividual contacto) {
+        Entidad eContacto = null;
+        boolean existe = false;
+        
+        try {
+			eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
+		} catch (NullPointerException e) {
+			existe = false;
 		}
-	}
+		if (existe)
+			return;
 
-	public Producto recuperarProducto(int codigo) {
-		Entidad eProducto;
-		double precio;
-		String nombre;
-		String descripcion;
 
-		eProducto = servPersistencia.recuperarEntidad(codigo);
-		precio = Double.parseDouble(servPersistencia.recuperarPropiedadEntidad(eProducto, "precio"));
-		nombre = servPersistencia.recuperarPropiedadEntidad(eProducto, "nombre");
-		descripcion = servPersistencia.recuperarPropiedadEntidad(eProducto, "descripcion");
+        // Crear entidad contacto
+        eContacto = new Entidad();
+        eContacto.setNombre("contacto");
+		eContacto.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("nombre", contacto.getNombre()),
+				new Propiedad("movil", String.valueOf(contacto.getMovil())),
+				new Propiedad("usuario", String.valueOf(contacto.getUsuario().getCodigo())))));
 
-		Producto producto = new Producto(precio, nombre, descripcion);
-		producto.setCodigo(codigo);
-		return producto;
-	}
+        // Registrar entidad contacto
+        eContacto = servPersistencia.registrarEntidad(eContacto);
+        contacto.getUsuario().setCodigo(eContacto.getId()); // Asignar identificador único
+        
+        eContacto = servPersistencia.registrarEntidad(eContacto);
 
-	public List<Producto> recuperarTodosProductos() {
-		List<Producto> productos = new LinkedList<Producto>();
-		List<Entidad> entidades = servPersistencia.recuperarEntidades("producto");
+		// Identificador unico
+		contacto.setCodigo(eContacto.getId());
+		
+		// Guardamos en el pool
+		PoolDAO.getUnicaInstancia().addObjeto(contacto.getCodigo(), contacto);
+    }
 
-		for (Entidad eProducto : entidades) {
-			productos.add(recuperarProducto(eProducto.getId()));
-		}
-		return productos;
-	}
+    @Override
+    public void borrarContacto(ContactoIndividual contacto) {
+        Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
+		servPersistencia.borrarEntidad(eContacto);
+		
+		// Si está en el pool, borramos del pool
+		if (PoolDAO.getUnicaInstancia().contiene(contacto.getCodigo()))
+			PoolDAO.getUnicaInstancia().removeObjeto(contacto.getCodigo());
+    }
 
+    @Override
+    public void modificarContacto(ContactoIndividual contacto) {
+
+        Entidad eContact = servPersistencia.recuperarEntidad(contacto.getCodigo());
+
+		// Se da el cambiazo a las propiedades del contacto
+		servPersistencia.eliminarPropiedadEntidad(eContact, "nombre");
+		servPersistencia.anadirPropiedadEntidad(eContact, "nombre", contacto.getNombre());
+		servPersistencia.eliminarPropiedadEntidad(eContact, "movil");
+		servPersistencia.anadirPropiedadEntidad(eContact, "movil", String.valueOf(contacto.getMovil()));
+		servPersistencia.eliminarPropiedadEntidad(eContact, "usuario");
+		servPersistencia.anadirPropiedadEntidad(eContact, "usuario", String.valueOf(contacto.getUsuario().getCodigo()));
+    }
+
+    @Override
+    public ContactoIndividual recuperarContacto(int codigo) {
+    	// Si la entidad esta en el pool la devuelve directamente
+    			if (PoolDAO.getUnicaInstancia().contiene(codigo))
+    				return (ContactoIndividual) PoolDAO.getUnicaInstancia().getObjeto(codigo);
+
+    			// Sino, la recupera de la base de datos
+    			// Recuperamos la entidad
+    			Entidad eContacto = servPersistencia.recuperarEntidad(codigo);
+
+    			// recuperar propiedades que no son objetos
+    			String nombre = servPersistencia.recuperarPropiedadEntidad(eContacto, "nombre");
+    			
+    			String movil = servPersistencia.recuperarPropiedadEntidad(eContacto, "movil");
+    			
+    			ContactoIndividual contacto = new ContactoIndividual(nombre, null, movil);
+    			contacto.setCodigo(codigo);
+
+    			// Metemos al contacto en el pool antes de llamar a otros adaptadores
+    			PoolDAO.getUnicaInstancia().addObjeto(codigo, contacto);
+
+    			// Obtener usuario del contacto
+    			AdaptadorUsuarioTDS adaptadorUsuarios = AdaptadorUsuarioTDS.getUnicaInstancia();
+    			contacto.setUsuario(adaptadorUsuarios.recuperarUsuario(Integer.valueOf(servPersistencia.recuperarPropiedadEntidad(eContacto, "usuario"))));
+
+    			// Devolvemos el objeto contacto
+    			return contacto;
+    }
+
+    @Override
+    public List<ContactoIndividual> recuperarTodosContactos() {
+        List<ContactoIndividual> contactos = new LinkedList<>();
+        List<Entidad> entidades = servPersistencia.recuperarEntidades("contacto");
+
+        for (Entidad eContacto : entidades) {
+            contactos.add(recuperarContacto(eContacto.getId()));
+        }
+        return contactos;
+    }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
+import modelo.ContactoIndividual;
 import modelo.RepositorioUsuarios;
 import modelo.Usuario;
 import persistencia.DAOException;
@@ -24,9 +25,9 @@ public enum Controlador {
 	private IAdaptadorMensajeDAO adaptadorMensaje;
 	private IAdaptadorGrupoDAO adaptadorGrupo;
 	private IAdaptadorContactoIndividualDAO adaptadorContactoIndividual;
-	
+
 	private RepositorioUsuarios repoUsuarios;
-	
+
 	private Usuario usuarioActual;
 
 	private Controlador() {
@@ -49,38 +50,38 @@ public enum Controlador {
 			e.printStackTrace();
 		}
 		adaptadorUsuario = factoria.getUsuarioDAO();
-		//adaptadorGrupo = factoria.getGrupoDAO();
-		//adaptadorContactoIndividual = factoria.getContactoIndividualDAO();
-		//adaptadorMensaje = factoria.getMensajeDAO();
+		// adaptadorGrupo = factoria.getGrupoDAO();
+		adaptadorContactoIndividual = factoria.getContactoIndividualDAO();
+		// adaptadorMensaje = factoria.getMensajeDAO();
 	}
 
 	public boolean doLogin(String telefono, String passwd) {
 		if (telefono.isEmpty() || passwd.isEmpty())
 			return false;
 
-		/*Usuario cliente = repoUsuarios.getUsuario(telefono);
-		if (cliente == null)
-			return false;*/
-		 Optional<Usuario> clienteOpt = repoUsuarios.getUsuarioPorTelefono(telefono);
-		    if (clienteOpt.isEmpty()) {
-		        System.out.println("Usuario no encontrado para el teléfono: " + telefono);
-		        return false;
-		    }
+		/*
+		 * Usuario cliente = repoUsuarios.getUsuario(telefono); if (cliente == null)
+		 * return false;
+		 */
+		Optional<Usuario> clienteOpt = repoUsuarios.getUsuarioPorTelefono(telefono);
+		if (clienteOpt.isEmpty()) {
+			System.out.println("Usuario no encontrado para el teléfono: " + telefono);
+			return false;
+		}
 
-		    Usuario cliente = clienteOpt.get();
+		Usuario cliente = clienteOpt.get();
 
 		// Si la password esta bien inicia sesion
 		if (cliente.getContraseña().equals(passwd)) {
 			usuarioActual = cliente;
 
-			
 			return true;
 		}
 		return false;
-    }
-	
+	}
+
 	public boolean doRegister(String name, String telefono, String password, String saludo, Date fecha, String image) {
-		
+
 		Usuario nuevoUsuario = new Usuario(name, password.toString(), telefono, fecha, image, saludo);
 		if (!repoUsuarios.contieneUsuario(nuevoUsuario)) {
 			// Guarda la imagen en el proyecto
@@ -94,12 +95,25 @@ public enum Controlador {
 		return false;
 	}
 
+	public ContactoIndividual doAgregar(String nombre, String telefono) {
+		if (!usuarioActual.tieneContacto(nombre)) {
+			Optional<Usuario> usuarioOpt = repoUsuarios.getUsuarioPorTelefono(telefono);
+
+			if (usuarioOpt.isPresent()) {
+				ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, usuarioOpt.get(), telefono);
+				usuarioActual.addContacto(nuevoContacto);
+
+				adaptadorContactoIndividual.registrarContacto(nuevoContacto);
+
+				adaptadorUsuario.modificarUsuario(usuarioActual);
+				return nuevoContacto;
+			}
+		}
+		return null;
+	}
+
 	public Usuario getUsuarioActual() {
 		return usuarioActual;
 	}
 
-	
-	
-	
-	
 }

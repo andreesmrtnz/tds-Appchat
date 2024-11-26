@@ -31,6 +31,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class VentanaMain extends JFrame {
 
@@ -98,6 +100,12 @@ public class VentanaMain extends JFrame {
         panelSuperior.add(searchButton);
 
         JButton contactosButton = new JButton("Contactos");
+        contactosButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		JFrame ventanaContactos = new VentanaContactos();
+        		ventanaContactos.setVisible(true);
+        	}
+        });
         contactosButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/grupo.png")));
         panelSuperior.add(contactosButton);
 

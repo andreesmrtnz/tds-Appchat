@@ -1,6 +1,9 @@
 package vista;
 
 import javax.swing.*;
+
+import controlador.Controlador;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,8 +12,10 @@ public class AlertaAgregarContacto extends JFrame {
 
     private JTextField nombreField;
     private JTextField telefonoField;
+    private Controlador controlador;
 
     public AlertaAgregarContacto() {
+    	controlador = Controlador.INSTANCE;
         setTitle("Agregar Contacto");
         setSize(818, 364);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -80,8 +85,7 @@ public class AlertaAgregarContacto extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String nombre = nombreField.getText();
                 String telefono = telefonoField.getText();
-                System.out.println("Contacto agregado: Nombre - " + nombre + ", Teléfono - " + telefono);
-                dispose();
+                controlador.doAgregar(nombre,  telefono);
             }
         });
     }
