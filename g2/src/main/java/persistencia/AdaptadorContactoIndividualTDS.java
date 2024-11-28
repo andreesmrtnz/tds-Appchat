@@ -37,6 +37,9 @@ public class AdaptadorContactoIndividualTDS implements IAdaptadorContactoIndivid
         if (eContacto != null) {
             return; // La entidad ya existe, no registrar nuevamente
         }
+        
+        // Registramos al usuario correspondiente al contacto si no existe.
+     	registrarSiNoExisteUsuario(contacto.getUsuario());
 
         // Crear nueva entidad contacto
         eContacto = new Entidad();
@@ -126,4 +129,21 @@ public class AdaptadorContactoIndividualTDS implements IAdaptadorContactoIndivid
         }
         return contactos;
     }
+    
+    // --------------
+
+    private void registrarSiNoExisteUsuario(Usuario admin) {
+    	AdaptadorUsuarioTDS adaptadorUsuarios = AdaptadorUsuarioTDS.getUnicaInstancia();
+    	adaptadorUsuarios.registrarUsuario(admin);
+    }
+    
+    private Usuario obtenerUsuarioDesdeCodigo(String codigo) {
+		AdaptadorUsuarioTDS adaptadorUsuarios = AdaptadorUsuarioTDS.getUnicaInstancia();
+		return adaptadorUsuarios.recuperarUsuario(Integer.valueOf(codigo));
+	}
 }
+
+
+
+
+

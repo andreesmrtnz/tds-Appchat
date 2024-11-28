@@ -85,11 +85,16 @@ public class VentanaMain extends JFrame {
         contentPane.add(panelSuperior, gbc_panelSuperior);
         panelSuperior.setLayout(new BoxLayout(panelSuperior, BoxLayout.X_AXIS));
 
-        JComboBox comboBox = new JComboBox();
+        JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setName("contacto o telefono");
-        comboBox.setModel(new DefaultComboBoxModel(new String[]{"contacto", "telefono"}));
-        comboBox.setToolTipText("contacto o telefono");
+        DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
+        Controlador.INSTANCE.getContactosNombre().forEach(comboBoxModel::addElement);
+        comboBoxModel.addElement("telefono");
+        comboBox.setModel(comboBoxModel);
+        comboBox.setEditable(true);
+        comboBox.setToolTipText("Seleccione un contacto o escriba un teléfono");
         panelSuperior.add(comboBox);
+
 
         JButton enviarBarraButton = new JButton("");
         enviarBarraButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/send.png")));

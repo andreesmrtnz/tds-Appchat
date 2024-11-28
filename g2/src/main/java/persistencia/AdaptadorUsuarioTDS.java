@@ -2,7 +2,6 @@ package persistencia;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,10 +13,10 @@ import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
-
+import modelo.Contacto;
+import modelo.ContactoIndividual;
 import modelo.Usuario;
 
-//Usa un pool para evitar problemas doble referencia con ventas
 public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
     private static ServicioPersistencia servPersistencia;
     private static AdaptadorUsuarioTDS unicaInstancia = null;
@@ -50,20 +49,26 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
         Entidad eUsuario = null;
 
         try {
-			eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
-		} catch (NullPointerException e) {}
-		if (eUsuario != null)	return;
+            eUsuario = servPersistencia.recuperarEntidad(usuario.getCodigo());
+        } catch (NullPointerException e) {}
+        if (eUsuario != null) return;
+        
+     // Registrar los contactos
+        registrarSiNoExistenContactos(usuario.getContactos());
 
         // Crear entidad usuario con sus propiedades
         eUsuario = new Entidad();
         eUsuario.setNombre("usuario");
+
+        // Propiedades no objeto
         eUsuario.setPropiedades(new ArrayList<>(Arrays.asList(
                 new Propiedad("nombre", usuario.getUsuario()),
                 new Propiedad("fechanacimiento", dateFormat.format(usuario.getFechaNacimiento())),
                 new Propiedad("telefono", String.valueOf(usuario.getTelefono())),
                 new Propiedad("password", usuario.getContraseña()),
                 new Propiedad("imagenes", usuario.getImagen()),
-                new Propiedad("saludo", usuario.getSaludo())
+                new Propiedad("saludo", usuario.getSaludo()),
+                new Propiedad("contactos", obtenerCodigosContactoIndividual(usuario.getContactos())) // Aquí gestionamos los contactos
         )));
 
         // Registrar la entidad usuario en el servicio de persistencia
@@ -71,11 +76,13 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 
         // Asignar el identificador único al usuario
         usuario.setCodigo(eUsuario.getId());
+        
 
         // Añadir al pool para evitar duplicados en memoria
         PoolDAO.getUnicaInstancia().addObjeto(usuario.getCodigo(), usuario);
     }
 
+    // Recuperar usuario de la base de datos
     public Usuario recuperarUsuario(int codigo) {
         // Si el usuario ya está en el pool, devolverlo directamente
         if (PoolDAO.getUnicaInstancia().contiene(codigo)) {
@@ -108,12 +115,19 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
         Usuario usuario = new Usuario(nombre, password, telefono, fechaNacimiento, pathImages, saludo);
         usuario.setCodigo(codigo);
 
+        // Recuperar contactos
+        String codigosContactos = servPersistencia.recuperarPropiedadEntidad(eUsuario, "contactos");
+        List<ContactoIndividual> contactos = obtenerContactosDesdeCodigos(codigosContactos);
+        for (ContactoIndividual c : contactos) {
+            usuario.addContacto(c);
+        }
+
         // Añadir al pool
         PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
 
         return usuario;
     }
-    
+
     @Override
     public void modificarUsuario(Usuario user) {
         Entidad eUser = servPersistencia.recuperarEntidad(user.getCodigo());
@@ -138,8 +152,11 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 
         servPersistencia.eliminarPropiedadEntidad(eUser, "imagenes");
         servPersistencia.anadirPropiedadEntidad(eUser, "imagenes", user.getImagen());
-    }
 
+        // Actualizar los contactos
+        servPersistencia.eliminarPropiedadEntidad(eUser, "contactos");
+        servPersistencia.anadirPropiedadEntidad(eUser, "contactos", obtenerCodigosContactoIndividual(user.getContactos()));
+    }
 
     @Override
     public List<Usuario> recuperarTodosUsuarios() {
@@ -151,4 +168,38 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
         }
         return usuarios;
     }
+
+    // -------------------Funciones auxiliares-----------------------------
+    private void registrarSiNoExistenContactos(List<ContactoIndividual> contactos) {
+        AdaptadorContactoIndividualTDS adaptadorContactos = AdaptadorContactoIndividualTDS.getUnicaInstancia();
+        contactos.forEach(c -> adaptadorContactos.registrarContacto(c));
+    }
+
+    private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
+        List<ContactoIndividual> contactos = new LinkedList<>();
+        
+        // Verificamos que codigos no sea null ni vacío
+        if (codigos == null || codigos.isEmpty()) {
+            return contactos; // Si es null o vacío, devolvemos una lista vacía
+        }
+
+        StringTokenizer strTok = new StringTokenizer(codigos, " ");
+        AdaptadorContactoIndividualTDS adaptadorC = AdaptadorContactoIndividualTDS.getUnicaInstancia();
+        
+        while (strTok.hasMoreTokens()) {
+            String token = strTok.nextToken();
+            if (token != null && !token.trim().isEmpty()) {
+                contactos.add(adaptadorC.recuperarContacto(Integer.valueOf(token)));
+            }
+        }
+        return contactos;
+    }
+
+
+    private String obtenerCodigosContactoIndividual(List<ContactoIndividual> contactos) {
+		return contactos.stream() 
+				.map(c -> String.valueOf(c.getCodigo())).reduce("", (l, c) -> l + c + " ") // concateno todos los
+																							// codigos
+				.trim();
+	}
 }
