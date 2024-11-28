@@ -10,6 +10,10 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import controlador.Controlador;
+import modelo.ContactoIndividual;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -21,6 +25,7 @@ public class VentanaContactos extends JFrame {
     private JButton btnAgregarGrupo;
     private JButton btnMoverDerecha;
     private JButton btnMoverIzquierda;
+    private Controlador controlador;
 
     public VentanaContactos() {
         setTitle("Gestión de Grupos");
@@ -33,11 +38,7 @@ public class VentanaContactos extends JFrame {
 
         // Listado de contactos
         DefaultListModel<String> modeloContactos = new DefaultListModel<>();
-        modeloContactos.addElement("contacto1");
-        modeloContactos.addElement("contacto2");
-        modeloContactos.addElement("grupo1");
-        modeloContactos.addElement("contacto3");
-        modeloContactos.addElement("grupo2");
+        modeloContactos.addAll(controlador.INSTANCE.getContactosNombre());
         GridBagLayout gbl_contentPane = new GridBagLayout();
         gbl_contentPane.columnWidths = new int[]{7, 111, 49, 100, 0, 0};
         gbl_contentPane.rowHeights = new int[]{6, 150, 23, 0, 0};

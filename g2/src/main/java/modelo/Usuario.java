@@ -7,20 +7,19 @@ import java.util.List;
 
 public class Usuario {
 	private int codigo;
-    private String usuario;
-    private String contraseña;
-    private String telefono;
-    private Date fechaNacimiento;
-    private String imagen;
-    private String saludo;
-    private Descuento descuento;
-    private List<Mensaje> enviados = new ArrayList<>();
-    private List<Mensaje> recibidos = new ArrayList<>();
-    private List<ContactoIndividual> contactos = new ArrayList<>();
+	private String usuario;
+	private String contraseña;
+	private String telefono;
+	private Date fechaNacimiento;
+	private String imagen;
+	private String saludo;
+	private Descuento descuento;
+	private List<Mensaje> enviados = new ArrayList<>();
+	private List<Mensaje> recibidos = new ArrayList<>();
+	private List<ContactoIndividual> contactos = new ArrayList<>();
 
-    
-    
-    public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen, String saludo) {
+	public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen,
+			String saludo) {
 		super();
 		this.usuario = usuario;
 		this.contraseña = contraseña;
@@ -31,36 +30,36 @@ public class Usuario {
 	}
 
 	public ContactoIndividual getContactoIndividual(Usuario otroUsuario) {
-        for (Contacto contacto : contactos) {
-            if (contacto instanceof ContactoIndividual && 
-                ((ContactoIndividual) contacto).getUsuario().equals(otroUsuario)) {
-                return (ContactoIndividual) contacto;
-            }
-        }
-        return null;
-    }
+		for (Contacto contacto : contactos) {
+			if (contacto instanceof ContactoIndividual
+					&& ((ContactoIndividual) contacto).getUsuario().equals(otroUsuario)) {
+				return (ContactoIndividual) contacto;
+			}
+		}
+		return null;
+	}
 
-    public List<Mensaje> getChatMensajes(Usuario otroUsuario) {
-        List<Mensaje> chatMensajes = new ArrayList<>();
-        for (Mensaje mensaje : enviados) {
-            if (mensaje.getReceptor().equals(otroUsuario)) {
-                chatMensajes.add(mensaje);
-            }
-        }
-        for (Mensaje mensaje : recibidos) {
-            if (mensaje.getEmisor().equals(otroUsuario)) {
-                chatMensajes.add(mensaje);
-            }
-        }
-        // Ordenar mensajes por fecha y hora
-        chatMensajes.sort((m1, m2) -> {
-            if (m1.getFecha().equals(m2.getFecha())) {
-                return m1.getHora().compareTo(m2.getHora());
-            }
-            return m1.getFecha().compareTo(m2.getFecha());
-        });
-        return chatMensajes;
-    }
+	public List<Mensaje> getChatMensajes(Usuario otroUsuario) {
+		List<Mensaje> chatMensajes = new ArrayList<>();
+		for (Mensaje mensaje : enviados) {
+			if (mensaje.getReceptor().equals(otroUsuario)) {
+				chatMensajes.add(mensaje);
+			}
+		}
+		for (Mensaje mensaje : recibidos) {
+			if (mensaje.getEmisor().equals(otroUsuario)) {
+				chatMensajes.add(mensaje);
+			}
+		}
+		// Ordenar mensajes por fecha y hora
+		chatMensajes.sort((m1, m2) -> {
+			if (m1.getFecha().equals(m2.getFecha())) {
+				return m1.getHora().compareTo(m2.getHora());
+			}
+			return m1.getFecha().compareTo(m2.getFecha());
+		});
+		return chatMensajes;
+	}
 
 	public String getUsuario() {
 		return usuario;
@@ -102,6 +101,14 @@ public class Usuario {
 		return contactos;
 	}
 
+	public List<String> getContactosNombre() {
+		List<String> nombres = new ArrayList<>();
+	for (ContactoIndividual contacto: contactos) {
+    	nombres.add(contacto.getNombre());
+    }
+		return nombres;
+	}
+
 	public int getCodigo() {
 		return codigo;
 	}
@@ -113,11 +120,10 @@ public class Usuario {
 	public void addContacto(ContactoIndividual contacto) {
 		contactos.add(contacto);
 	}
-	
+
 	public boolean tieneContacto(String telefono) {
 		return contactos.stream().anyMatch(c -> c instanceof ContactoIndividual && c.getNombre().equals(telefono));
 	}
-    
-    // Getters y Setters
-}
 
+	// Getters y Setters
+}

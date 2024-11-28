@@ -25,7 +25,7 @@ public class TDSFactoriaDAO extends FactoriaDAO {
 	@Override
 	public IAdaptadorContactoIndividualDAO getContactoIndividualDAO() {
 		// TODO Auto-generated method stub
-		return null;
+		return AdaptadorContactoIndividualTDS.getUnicaInstancia();
 	}
 
 }

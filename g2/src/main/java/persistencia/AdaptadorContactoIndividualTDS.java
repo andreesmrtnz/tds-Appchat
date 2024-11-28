@@ -32,37 +32,36 @@ public class AdaptadorContactoIndividualTDS implements IAdaptadorContactoIndivid
 
     @Override
     public void registrarContacto(ContactoIndividual contacto) {
-        Entidad eContacto = null;
-        boolean existe = false;
-        
-        try {
-			eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
-		} catch (NullPointerException e) {
-			existe = false;
-		}
-		if (existe)
-			return;
+        // Intentar recuperar la entidad
+        Entidad eContacto = servPersistencia.recuperarEntidad(contacto.getCodigo());
+        if (eContacto != null) {
+            return; // La entidad ya existe, no registrar nuevamente
+        }
 
-
-        // Crear entidad contacto
+        // Crear nueva entidad contacto
         eContacto = new Entidad();
         eContacto.setNombre("contacto");
-		eContacto.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("nombre", contacto.getNombre()),
-				new Propiedad("movil", String.valueOf(contacto.getMovil())),
-				new Propiedad("usuario", String.valueOf(contacto.getUsuario().getCodigo())))));
+        eContacto.setPropiedades(new ArrayList<>(Arrays.asList(
+            new Propiedad("nombre", contacto.getNombre()),
+            new Propiedad("movil", String.valueOf(contacto.getMovil())),
+            new Propiedad("usuario", String.valueOf(contacto.getUsuario().getCodigo()))
+        )));
 
-        // Registrar entidad contacto
-        eContacto = servPersistencia.registrarEntidad(eContacto);
-        contacto.getUsuario().setCodigo(eContacto.getId()); // Asignar identificador único
-        
+        // Registrar entidad en persistencia
         eContacto = servPersistencia.registrarEntidad(eContacto);
 
-		// Identificador unico
-		contacto.setCodigo(eContacto.getId());
-		
-		// Guardamos en el pool
-		PoolDAO.getUnicaInstancia().addObjeto(contacto.getCodigo(), contacto);
+        // Validar que la entidad fue registrada correctamente
+        if (eContacto == null) {
+            throw new IllegalStateException("Error al registrar la entidad 'contacto'.");
+        }
+
+        // Asignar identificador único al contacto
+        contacto.setCodigo(eContacto.getId());
+
+        // Guardar en el pool
+        PoolDAO.getUnicaInstancia().addObjeto(contacto.getCodigo(), contacto);
     }
+
 
     @Override
     public void borrarContacto(ContactoIndividual contacto) {

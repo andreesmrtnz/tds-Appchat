@@ -2,6 +2,7 @@ package controlador;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import modelo.ContactoIndividual;
@@ -111,9 +112,14 @@ public enum Controlador {
 		}
 		return null;
 	}
+	
+	public List<String> getContactosNombre(){
+		return usuarioActual.getContactosNombre();
+	}
 
 	public Usuario getUsuarioActual() {
 		return usuarioActual;
 	}
+	
 
 }
