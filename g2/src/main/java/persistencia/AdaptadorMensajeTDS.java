@@ -1,17 +1,22 @@
 package persistencia;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
+import modelo.Contacto;
+import modelo.ContactoIndividual;
+import modelo.Grupo;
+import modelo.Mensaje;
+import modelo.Usuario;
 
-import modelo.LineaVenta;
-import modelo.Producto;
-
-public class AdaptadorMensajeTDS implements IAdaptadorLineaVentaDAO {
+public class AdaptadorMensajeTDS implements IAdaptadorMensajeDAO {
 
 	private static ServicioPersistencia servPersistencia;
 	private static AdaptadorMensajeTDS unicaInstancia;
@@ -31,68 +36,134 @@ public class AdaptadorMensajeTDS implements IAdaptadorLineaVentaDAO {
 	/*
 	 * cuando se registra una linea de venta se le asigna un identificador unico
 	 */
-	public void registrarLineaVenta(LineaVenta lineaVenta) {
-		Entidad eLineaVenta = null;
+	public void registrarMensaje(Mensaje mensaje) {
+		Entidad eMensaje = new Entidad();
+		boolean existe = true;
+
+		// Si la entidad está registrada no la registra de nuevo
 		try {
-			eLineaVenta = servPersistencia.recuperarEntidad(lineaVenta.getCodigo());
-		} catch (NullPointerException e) {}
-		if (eLineaVenta != null) return;
+			eMensaje = servPersistencia.recuperarEntidad(mensaje.getCodigo());
+		} catch (NullPointerException e) {
+			existe = false;
+		}
+		if (existe) {
+			return;
+		}
 
 		// registrar primero los atributos que son objetos
-		AdaptadorContactoIndividualTDS adaptadorProducto = AdaptadorContactoIndividualTDS.getUnicaInstancia();
-		adaptadorProducto.registrarProducto(lineaVenta.getProducto());
+		// registrar usuario emisor del mensaje
+		registrarSiNoExisteUsuario(mensaje.getEmisor());
 
-		// crear entidad linea de venta
-		eLineaVenta = new Entidad();
-		eLineaVenta.setNombre("lineaventa");
-		eLineaVenta.setPropiedades(new ArrayList<Propiedad>(
-				Arrays.asList(new Propiedad("unidades", String.valueOf(lineaVenta.getUnidades())),
-						new Propiedad("producto", String.valueOf(lineaVenta.getProducto().getCodigo())))));
+		// registrar contacto receptor del mensaje
+		registrarSiNoExistenContactosoGrupos(mensaje.getReceptor());
 
-		// registrar entidad linea de venta
-		eLineaVenta = servPersistencia.registrarEntidad(eLineaVenta);
-		// asignar identificador unico.
-		// Se aprovecha el que genera el servicio de persistencia
-		lineaVenta.setCodigo(eLineaVenta.getId());
-	}
+		// Atributos propios del usuario
+		eMensaje.setNombre("mensaje");
 
-	public void borrarLineaVenta(LineaVenta lineaVenta) {
-		// No se comprueba integridad con venta
-		Entidad eLineaVenta = servPersistencia.recuperarEntidad(lineaVenta.getCodigo());
-		servPersistencia.borrarEntidad(eLineaVenta);
-	}
-
-	public void modificarLineaVenta(LineaVenta lineaVenta) {
-		Entidad eLineaVenta = servPersistencia.recuperarEntidad(lineaVenta.getCodigo());
-
-		for (Propiedad prop : eLineaVenta.getPropiedades()) {
-			if (prop.getNombre().equals("codigo")) {
-				prop.setValor(String.valueOf(lineaVenta.getCodigo()));
-			} else if (prop.getNombre().equals("unidades")) {
-				prop.setValor(String.valueOf(lineaVenta.getUnidades()));
-			} else if (prop.getNombre().equals("producto")) {
-				prop.setValor(String.valueOf(lineaVenta.getProducto().getCodigo()));
-			}
-			servPersistencia.modificarPropiedad(prop);
+		// Se guarda el grupo receptor o el contacto, segun convenga
+		boolean grupo = false;
+		if (mensaje.getReceptor() instanceof Grupo) {
+			grupo = true;
 		}
+
+		eMensaje.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("texto", mensaje.getTexto()),
+				new Propiedad("hora", mensaje.getHora().toString()),
+				new Propiedad("emoticono", String.valueOf(mensaje.getEmoticono())),
+				new Propiedad("receptor", String.valueOf(mensaje.getReceptor().getCodigo())),
+				new Propiedad("togroup", String.valueOf(grupo)),
+				new Propiedad("emisor", String.valueOf(mensaje.getEmisor().getCodigo())))));
+
+		// Registrar entidad mensaje
+		eMensaje = servPersistencia.registrarEntidad(eMensaje);
+
+		// Identificador unico
+		mensaje.setCodigo(eMensaje.getId());
+		
+		// Guardamos en el pool
+		PoolDAO.getUnicaInstancia().addObjeto(mensaje.getCodigo(), mensaje);
 	}
 
-	public LineaVenta recuperarLineaVenta(int codigo) {
-		Entidad eLineaVenta;
-		int unidades;
-		Producto producto;
+	@Override
+	public Mensaje recuperarMensaje(int codigo) {
+		// Si la entidad esta en el pool la devuelve directamente
+		if (PoolDAO.getUnicaInstancia().contiene(codigo))
+			return (Mensaje) PoolDAO.getUnicaInstancia().getObjeto(codigo);
 
-		eLineaVenta = servPersistencia.recuperarEntidad(codigo);
-		unidades = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eLineaVenta, "unidades"));
+		// si no, la recupera de la base de datos
+		// recuperar entidad
+		Entidad eMensaje = servPersistencia.recuperarEntidad(codigo);
+		
+		// recuperar propiedades que no son objetos
+		// fecha
+		String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, "texto");
+		LocalDateTime hora = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, "hora"));
+		int emoticono = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "emoticono"));
+		Contacto receptor = null;
+		Boolean toGroup = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eMensaje, "togroup"));
+		Usuario emisor = null;
 
-		// Para recuperar el producto se lo solicita al adaptador producto
-		AdaptadorContactoIndividualTDS adaptadorProducto = AdaptadorContactoIndividualTDS.getUnicaInstancia();
-		producto = adaptadorProducto.recuperarProducto(
-				Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eLineaVenta, "producto")));
+		Mensaje mensaje = new Mensaje(texto, emoticono, hora);
+		mensaje.setCodigo(codigo);
 
-		LineaVenta lineaVenta = new LineaVenta(unidades, producto);
-		lineaVenta.setCodigo(codigo);
-		return lineaVenta;
+		// Metemos el usuario en el pool antes de llamar a otros
+		// adaptadores
+		PoolDAO.getUnicaInstancia().addObjeto(codigo, mensaje);
+
+		// recuperar propiedades que son objetos llamando a adaptadores
+		// mensaje
+		// Usuario emisor
+		AdaptadorUsuarioTDS adaptadorU = AdaptadorUsuarioTDS.getUnicaInstancia();
+		int codigoUsuario = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "emisor"));
+		emisor = adaptadorU.recuperarUsuario(codigoUsuario);
+		mensaje.setEmisor(emisor);
+
+		// Contacto o grupo receptor
+		int codigoContacto = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "receptor"));
+		if (toGroup) {
+			AdaptadorGrupoTDS adaptadorG = AdaptadorGrupoTDS.getUnicaInstancia();
+			//receptor = adaptadorG.recuperarGrupo(codigoContacto);
+		} else {
+			AdaptadorContactoIndividualTDS adaptadorC = AdaptadorContactoIndividualTDS.getUnicaInstancia();
+			receptor = adaptadorC.recuperarContacto(codigoContacto);
+		}
+		mensaje.setReceptor(receptor);
+
+		// devolver el objeto mensaje con todo
+		return mensaje;
+	}
+
+	@Override
+	public List<Mensaje> recuperarTodosMensajes() {
+		List<Mensaje> mensajes = new LinkedList<>();
+		List<Entidad> eMensajes = servPersistencia.recuperarEntidades("mensaje");
+
+		for (Entidad eMensaje : eMensajes) {
+			mensajes.add(recuperarMensaje(eMensaje.getId()));
+		}
+		return mensajes;
+	}
+	//---------------funciones auxiliares----------------
+
+	private void registrarListaSiNoExistenContactosoGrupos(List<Contacto> contactos) {
+		AdaptadorContactoIndividualTDS adaptadorContactos = AdaptadorContactoIndividualTDS.getUnicaInstancia();
+		//AdaptadorGrupoTDS adaptadorGrupos = AdaptadorGrupoTDS.getUnicaInstancia();
+		contactos.stream().forEach(c -> {
+			if (c instanceof ContactoIndividual) {
+				adaptadorContactos.registrarContacto((ContactoIndividual) c);
+			} //else {
+				//adaptadorGrupos.registrarGrupo((Group) c);
+			//}
+		});
+	}
+	
+	private void registrarSiNoExistenContactosoGrupos(Contacto contacto) {
+		LinkedList<Contacto> contactos = new LinkedList<>();
+		contactos.add(contacto);
+		registrarListaSiNoExistenContactosoGrupos(contactos);
+	}
+
+	private void registrarSiNoExisteUsuario(Usuario emisor) {
+		AdaptadorUsuarioTDS.getUnicaInstancia().registrarUsuario(emisor);
 	}
 
 }

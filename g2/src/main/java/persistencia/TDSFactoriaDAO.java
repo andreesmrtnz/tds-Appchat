@@ -13,7 +13,7 @@ public class TDSFactoriaDAO extends FactoriaDAO {
 	@Override
 	public IAdaptadorMensajeDAO getMensajeDAO() {
 		// TODO Auto-generated method stub
-		return null;
+		return AdaptadorMensajeTDS.getUnicaInstancia();
 	}
 
 	@Override

@@ -1,25 +1,31 @@
 package modelo;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Mensaje {
     private String texto;
-    private String emoticono;
+    private int emoticono;
     private Date fecha;
-    private String hora;
-    private String emisor;
-    private String receptor;
+    private LocalDateTime hora;
+    private Usuario emisor;
+    private Contacto receptor;
+    private int codigo;
 
-   
-    public Mensaje(String texto, String emisor, String receptor) {
+
+	public Mensaje(String texto, Usuario emisor, Contacto receptor) {
 		super();
 		this.texto = texto;
 		this.emisor = emisor;
 		this.receptor = receptor;
 	}
+	
+	public Mensaje(String texto, int emoticono, LocalDateTime hora) {
+		
+	}
     
 
-	public Mensaje(String texto, String emoticono, Date fecha, String hora, String emisor, String receptor) {
+	public Mensaje(String texto, int emoticono, Date fecha, String hora, Usuario emisor, Contacto receptor) {
 		super();
 		this.emoticono = emoticono;
 		this.emisor = emisor;
@@ -31,7 +37,7 @@ public class Mensaje {
 		return texto;
 	}
 
-	public String getEmoticono() {
+	public int getEmoticono() {
 		return emoticono;
 	}
 
@@ -39,18 +45,51 @@ public class Mensaje {
 		return fecha;
 	}
 
-	public String getHora() {
+	public LocalDateTime getHora() {
 		return hora;
 	}
 
-	public String getEmisor() {
+	public Usuario getEmisor() {
 		return emisor;
 	}
 
-	public String getReceptor() {
+	public Contacto getReceptor() {
 		return receptor;
 	}
+	
+	public int getCodigo() {
+		return codigo;
+	}
 
-    
-    // Getters y Setters
+
+	public void setCodigo(int codigo) {
+		this.codigo = codigo;
+	}
+
+	public void setTexto(String texto) {
+		this.texto = texto;
+	}
+
+	public void setEmoticono(int emoticono) {
+		this.emoticono = emoticono;
+	}
+
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
+	}
+
+	public void setHora(LocalDateTime hora) {
+		this.hora = hora;
+	}
+
+	public void setEmisor(Usuario emisor) {
+		this.emisor = emisor;
+	}
+
+	public void setReceptor(Contacto receptor) {
+		this.receptor = receptor;
+	}
+	
+	
+
 }
