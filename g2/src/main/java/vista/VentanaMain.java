@@ -98,6 +98,7 @@ public class VentanaMain extends JFrame implements Observer {
 
 	        chatPanel.add(burbuja);
 	    });
+	    Controlador.INSTANCE.setChatActual(contacto);
 
 	    // Refrescar el panel para mostrar los nuevos mensajes
 	    chatPanel.revalidate();
@@ -220,7 +221,7 @@ public class VentanaMain extends JFrame implements Observer {
 		JButton btnSend = new JButton("");
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				enviarMensaje(chat, textField, Controlador.INSTANCE.getChatActual());
 				
 			}
 		});
@@ -292,5 +293,18 @@ public class VentanaMain extends JFrame implements Observer {
 		Image image = icon.getImage();
 		Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH); // Escalado suave
 		return new ImageIcon(scaledImage);
+	}
+	
+	private void enviarMensaje(JPanel panel, JTextField textField, Contacto contacto) {
+		// No permite enviar un mensaje si no hay seleccionado ningún contacto
+		if (contacto == null)
+			return;
+
+		Controlador.INSTANCE.enviarMensaje(contacto, textField.getText());
+
+		BubbleText burbuja = new BubbleText(panel, textField.getText(), Color.GREEN, "Tú", BubbleText.SENT,
+				12);
+		panel.add(burbuja);
+		textField.setText(null);
 	}
 }

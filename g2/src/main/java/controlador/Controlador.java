@@ -1,6 +1,7 @@
 package controlador;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -66,7 +67,7 @@ public enum Controlador {
 		adaptadorUsuario = factoria.getUsuarioDAO();
 		// adaptadorGrupo = factoria.getGrupoDAO();
 		adaptadorContactoIndividual = factoria.getContactoIndividualDAO();
-		// adaptadorMensaje = factoria.getMensajeDAO();
+		adaptadorMensaje = factoria.getMensajeDAO();
 	}
 
 	public boolean doLogin(String telefono, String passwd) {
@@ -184,6 +185,28 @@ public enum Controlador {
 		for (Observer observer : observers) {
 			observer.actualizar();
 		}
+	}
+
+	public void enviarMensaje(Contacto contacto, String text) {
+		Mensaje mensaje = new Mensaje(text, LocalDateTime.now(), usuarioActual, contacto);
+		contacto.enviarMensaje(mensaje);
+
+		adaptadorMensaje.registrarMensaje(mensaje);
+
+		if (contacto instanceof ContactoIndividual) {
+			adaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
+		} //else {
+			//adaptadorGrupo.modificarGrupo((Grupo) contacto);
+		//}
+		
+	}
+
+	public Contacto getChatActual() {
+		return chatActual;
+	}
+
+	public void setChatActual(Contacto chatActual) {
+		this.chatActual = chatActual;
 	}
 
 }

@@ -39,7 +39,9 @@ public abstract class Contacto {
 
 	public abstract List<Mensaje> getMensajesRecibidos(Optional<Usuario> usuario);
 	
-    
+	public void enviarMensaje(Mensaje message) {
+		mensajes.add(message);
+	}
     // Getters y Setters
 }
 

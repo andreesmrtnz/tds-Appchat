@@ -21,6 +21,9 @@ public class Mensaje {
 	}
 	
 	public Mensaje(String texto, int emoticono, LocalDateTime hora) {
+		this.texto = texto;
+		this.emoticono = emoticono;
+		this.hora = hora;
 		
 	}
     
@@ -32,6 +35,13 @@ public class Mensaje {
 		this.receptor = receptor;
 	}
 
+
+	public Mensaje(String text, LocalDateTime now, Usuario usuarioActual, Contacto contacto) {
+		this.texto = text;
+		this.hora= now;
+		this.emisor = usuarioActual;
+		this.receptor = contacto;
+	}
 
 	public String getTexto() {
 		return texto;
