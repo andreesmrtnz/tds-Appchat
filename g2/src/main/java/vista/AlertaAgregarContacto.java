@@ -1,7 +1,6 @@
 package vista;
 
 import javax.swing.*;
-
 import controlador.Controlador;
 
 import java.awt.*;
@@ -13,19 +12,26 @@ public class AlertaAgregarContacto extends JFrame {
     private JTextField nombreField;
     private JTextField telefonoField;
     private Controlador controlador;
+    private VentanaMain ventanaPrincipal;  // Referencia de la ventana principal
 
+    
     public AlertaAgregarContacto() {
-    	controlador = Controlador.INSTANCE;
+        controlador = Controlador.INSTANCE;
+
         setTitle("Agregar Contacto");
         setSize(818, 364);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        // Configuración del diseño y elementos (como en el código original)
         GridBagLayout gridBagLayout = new GridBagLayout();
         gridBagLayout.columnWidths = new int[]{1, 118, 407, 0, 0};
         gridBagLayout.rowHeights = new int[]{6, 14, 20, 20, 23, 0, 0};
         gridBagLayout.columnWeights = new double[]{1.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
         gridBagLayout.rowWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
         getContentPane().setLayout(gridBagLayout);
+
+        // Agregar los campos y botones (como en el código original)
         JLabel label = new JLabel("Introduzca el nombre del contacto y su teléfono:");
         label.setFont(new Font("Tahoma", Font.BOLD, 20));
         GridBagConstraints gbc_label = new GridBagConstraints();
@@ -34,6 +40,8 @@ public class AlertaAgregarContacto extends JFrame {
         gbc_label.gridx = 1;
         gbc_label.gridy = 1;
         getContentPane().add(label, gbc_label);
+
+        // Campo de texto de nombre
         JLabel nombreLabel = new JLabel("Nombre:");
         nombreLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
         GridBagConstraints gbc_nombreLabel = new GridBagConstraints();
@@ -42,6 +50,7 @@ public class AlertaAgregarContacto extends JFrame {
         gbc_nombreLabel.gridx = 1;
         gbc_nombreLabel.gridy = 2;
         getContentPane().add(nombreLabel, gbc_nombreLabel);
+
         nombreField = new JTextField(10);
         GridBagConstraints gbc_nombreField = new GridBagConstraints();
         gbc_nombreField.fill = GridBagConstraints.HORIZONTAL;
@@ -49,6 +58,8 @@ public class AlertaAgregarContacto extends JFrame {
         gbc_nombreField.gridx = 2;
         gbc_nombreField.gridy = 2;
         getContentPane().add(nombreField, gbc_nombreField);
+
+        // Campo de texto de teléfono
         JLabel telefonoLabel = new JLabel("Teléfono:");
         telefonoLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
         GridBagConstraints gbc_telefonoLabel = new GridBagConstraints();
@@ -57,6 +68,7 @@ public class AlertaAgregarContacto extends JFrame {
         gbc_telefonoLabel.gridx = 1;
         gbc_telefonoLabel.gridy = 3;
         getContentPane().add(telefonoLabel, gbc_telefonoLabel);
+
         telefonoField = new JTextField(10);
         GridBagConstraints gbc_telefonoField = new GridBagConstraints();
         gbc_telefonoField.fill = GridBagConstraints.HORIZONTAL;
@@ -64,7 +76,7 @@ public class AlertaAgregarContacto extends JFrame {
         gbc_telefonoField.gridx = 2;
         gbc_telefonoField.gridy = 3;
         getContentPane().add(telefonoField, gbc_telefonoField);
-        
+
         JPanel panel = new JPanel();
         GridBagConstraints gbc_panel = new GridBagConstraints();
         gbc_panel.gridwidth = 2;
@@ -74,23 +86,29 @@ public class AlertaAgregarContacto extends JFrame {
         gbc_panel.gridy = 4;
         getContentPane().add(panel, gbc_panel);
         panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
         JButton aceptarButton = new JButton("Aceptar");
         aceptarButton.setFont(new Font("Tahoma", Font.BOLD, 20));
         panel.add(aceptarButton);
+
         JButton cancelarButton = new JButton("Cancelar");
         cancelarButton.setFont(new Font("Tahoma", Font.BOLD, 20));
         panel.add(cancelarButton);
+
         cancelarButton.addActionListener(e -> dispose());
+
+        // Cuando se acepta, llamar a un método de la ventana principal
         aceptarButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String nombre = nombreField.getText();
                 String telefono = telefonoField.getText();
-                controlador.doAgregar(nombre,  telefono);
+
+           
+
+                controlador.doAgregar(nombre, telefono);
+                dispose(); // Cierra la ventana actual
             }
         });
     }
 
-    public static void main(String[] args) {
-        new AlertaAgregarContacto().setVisible(true);
-    }
 }

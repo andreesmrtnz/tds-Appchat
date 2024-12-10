@@ -29,7 +29,7 @@ public class VentanaContactos extends JFrame {
 
     public VentanaContactos() {
         setTitle("Gestión de Grupos");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setSize(500, 300);
         setLocationRelativeTo(null);
 
@@ -76,6 +76,7 @@ public class VentanaContactos extends JFrame {
                 
                         // Botón Añadir Contacto
                         btnAgregarContacto = new JButton("Añadir Contacto");
+                        
                         btnAgregarContacto.addActionListener(new ActionListener() {
                         	public void actionPerformed(ActionEvent e) {
                         		JFrame agregarContacto = new AlertaAgregarContacto();
@@ -114,8 +115,5 @@ public class VentanaContactos extends JFrame {
         modeloGrupo.addElement("contacto5");
     }
 
-    public static void main(String[] args) {
-        VentanaContactos ventana = new VentanaContactos();
-        ventana.setVisible(true);
-    }
+    
 }

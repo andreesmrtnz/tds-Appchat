@@ -1,11 +1,17 @@
 package controlador;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Mensaje;
 import modelo.RepositorioUsuarios;
 import modelo.Usuario;
 import persistencia.DAOException;
@@ -14,6 +20,7 @@ import persistencia.IAdaptadorContactoIndividualDAO;
 import persistencia.IAdaptadorGrupoDAO;
 import persistencia.IAdaptadorMensajeDAO;
 import persistencia.IAdaptadorUsuarioDAO;
+import vista.Observer;
 
 public enum Controlador {
 
@@ -30,6 +37,12 @@ public enum Controlador {
 	private RepositorioUsuarios repoUsuarios;
 
 	private Usuario usuarioActual;
+
+	// Chat seleccionado
+	private Contacto chatActual;
+
+	private List<Observer> observers = new ArrayList<>();
+	private List<Contacto> contactos = new ArrayList<>();
 
 	private Controlador() {
 		inicializarAdaptadores();
@@ -75,6 +88,11 @@ public enum Controlador {
 		// Si la password esta bien inicia sesion
 		if (cliente.getContraseña().equals(passwd)) {
 			usuarioActual = cliente;
+			if (usuarioActual.getContactos() != null) {
+				contactos.addAll(usuarioActual.getContactos());
+			}
+			
+			notificarObservers();
 
 			return true;
 		}
@@ -107,19 +125,65 @@ public enum Controlador {
 				adaptadorContactoIndividual.registrarContacto(nuevoContacto);
 
 				adaptadorUsuario.modificarUsuario(usuarioActual);
+
+				contactos.add(nuevoContacto);
+				notificarObservers();
 				return nuevoContacto;
 			}
 		}
 		return null;
 	}
-	
-	public List<String> getContactosNombre(){
+
+	public List<Mensaje> getMensajes(Contacto contacto) {
+		// Si la conversacion es conmigo mismo es suficiente con mostrar mis mensajes
+		if (contacto instanceof ContactoIndividual && !((ContactoIndividual) contacto).esUsuario(usuarioActual)) {
+			return Stream
+					.concat(contacto.getMensajes().stream(),
+							contacto.getMensajesRecibidos(Optional.of(usuarioActual)).stream())
+					.sorted().collect(Collectors.toList());
+		} else {
+			// Dentro de los enviados estan contenidos todos los mensajes
+			return contacto.getMensajes().stream().sorted().collect(Collectors.toList());
+		}
+	}
+
+	// Devuelvo el último mensaje con ese contacto.
+	public Mensaje getUltimoMensaje(Contacto contacto) {
+		List<Mensaje> mensajes = getMensajes(contacto);
+		if (mensajes.isEmpty())
+			return null;
+		return mensajes.get(mensajes.size() - 1);
+	}
+
+	public List<String> getContactosNombre() {
 		return usuarioActual.getContactosNombre();
+	}
+
+	public List<ContactoIndividual> getContactosUsuarioActual() {
+		if (usuarioActual == null)
+			return new LinkedList<ContactoIndividual>();
+		Usuario u = repoUsuarios.getUsuario(usuarioActual.getCodigo());
+		return u.getContactos();
 	}
 
 	public Usuario getUsuarioActual() {
 		return usuarioActual;
 	}
-	
+
+	public Optional<ContactoIndividual> getContacto(String nombre) {
+		return getContactosUsuarioActual().stream().filter(c -> c.getNombre().equals(nombre)).findAny();
+	}
+
+	// Método para agregar observadores
+	public void agregarObserver(Observer observer) {
+		observers.add(observer);
+	}
+
+	// Método para notificar a los observadores
+	private void notificarObservers() {
+		for (Observer observer : observers) {
+			observer.actualizar();
+		}
+	}
 
 }

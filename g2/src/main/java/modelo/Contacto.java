@@ -1,11 +1,13 @@
 package modelo;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class Contacto {
     private String nombre;
     private int codigo;
-    private List<Mensaje> mensajes;
+    private List<Mensaje> mensajes = new LinkedList<Mensaje>();
 
 	public Contacto(String nombre2) {
 		this.nombre = nombre2;
@@ -35,6 +37,7 @@ public abstract class Contacto {
 		this.mensajes = mensajes;
 	}
 
+	public abstract List<Mensaje> getMensajesRecibidos(Optional<Usuario> usuario);
 	
     
     // Getters y Setters
