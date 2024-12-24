@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 
 import javax.swing.Box;
@@ -75,29 +76,26 @@ public class VentanaMain extends JFrame implements Observer {
 	    chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
 
 	    // Añadir mensajes al panel
-	    controlador.getMensajes(contacto).forEach(m -> {
-	        String emisor;
-	        int direccionMensaje;
-	        Color colorBurbuja;
+	    controlador.getMensajes(contacto).stream().map(m -> {
+			String emisor;
+			int direccionMensaje;
+			Color colorBurbuja;
 
-	        // Configurar las propiedades de la burbuja según el emisor
-	        if (m.getEmisor().equals(controlador.getUsuarioActual())) {
-	            colorBurbuja = Color.GREEN; // Color del mensaje enviado
-	            emisor = "You";
-	            direccionMensaje = BubbleText.SENT;
-	        } else {
-	            colorBurbuja = Color.LIGHT_GRAY; // Color del mensaje recibido
-	            emisor = m.getEmisor().getUsuario();
-	            direccionMensaje = BubbleText.RECEIVED;
-	        }
+			if (m.getEmisor().equals(controlador.getUsuarioActual())) {
+				colorBurbuja = Color.GREEN;
+				emisor = "You";
+				direccionMensaje = BubbleText.SENT;
+			} else {
+				colorBurbuja = Color.YELLOW;
+				emisor = m.getEmisor().getUsuario();
+				direccionMensaje = BubbleText.RECEIVED;
+			}
 
-	        // Crear burbuja para texto o emoticono
-	        BubbleText burbuja = m.getTexto().isEmpty() 
-	            ? new BubbleText(chatPanel, m.getEmoticono(), colorBurbuja, emisor, direccionMensaje,12)
-	            : new BubbleText(chatPanel, m.getTexto(), colorBurbuja, emisor, direccionMensaje, 12);
-
-	        chatPanel.add(burbuja);
-	    });
+			if (m.getTexto().isEmpty()) {
+				return new BubbleText(chatPanel, m.getEmoticono(), colorBurbuja, emisor, direccionMensaje, 12);
+			}
+			return new BubbleText(chatPanel, m.getTexto(), colorBurbuja, emisor, direccionMensaje, 12);
+		}).forEach(b -> chatPanel.add(b));
 	    Controlador.INSTANCE.setChatActual(contacto);
 
 	    // Refrescar el panel para mostrar los nuevos mensajes

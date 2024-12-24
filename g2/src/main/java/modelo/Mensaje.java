@@ -3,7 +3,7 @@ package modelo;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-public class Mensaje {
+public class Mensaje implements Comparable<Mensaje>{
     private String texto;
     private int emoticono;
     private Date fecha;
@@ -12,36 +12,27 @@ public class Mensaje {
     private Contacto receptor;
     private int codigo;
 
+ // Constructor.
+ 	public Mensaje(String texto, LocalDateTime hora, Usuario emisor, Contacto receptor) {
+ 		this.texto = texto;
+ 		this.hora = hora;
+ 		this.setEmisor(emisor);
+ 		this.setReceptor(receptor);
+ 	}
 
-	public Mensaje(String texto, Usuario emisor, Contacto receptor) {
-		super();
-		this.texto = texto;
-		this.emisor = emisor;
-		this.receptor = receptor;
-	}
-	
-	public Mensaje(String texto, int emoticono, LocalDateTime hora) {
-		this.texto = texto;
-		this.emoticono = emoticono;
-		this.hora = hora;
-		
-	}
-    
+ 	public Mensaje(int emoticono, LocalDateTime hora, Usuario emisor, Contacto receptor) {
+ 		this.texto = "";
+ 		this.hora = hora;
+ 		this.emoticono = emoticono;
+ 		this.setEmisor(emisor);
+ 		this.setReceptor(receptor);
+ 	}
 
-	public Mensaje(String texto, int emoticono, Date fecha, String hora, Usuario emisor, Contacto receptor) {
-		super();
-		this.emoticono = emoticono;
-		this.emisor = emisor;
-		this.receptor = receptor;
-	}
-
-
-	public Mensaje(String text, LocalDateTime now, Usuario usuarioActual, Contacto contacto) {
-		this.texto = text;
-		this.hora= now;
-		this.emisor = usuarioActual;
-		this.receptor = contacto;
-	}
+ 	public Mensaje(String texto, int emoticono, LocalDateTime hora) {
+ 		this.texto = texto;
+ 		this.emoticono = emoticono;
+ 		this.hora = hora;
+ 	}
 
 	public String getTexto() {
 		return texto;
@@ -100,6 +91,9 @@ public class Mensaje {
 		this.receptor = receptor;
 	}
 	
-	
+	@Override
+	public int compareTo(Mensaje mensaje) {
+		return hora.compareTo(mensaje.hora);
+	}
 
 }

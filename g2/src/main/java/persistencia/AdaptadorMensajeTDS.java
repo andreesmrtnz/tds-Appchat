@@ -41,14 +41,17 @@ public class AdaptadorMensajeTDS implements IAdaptadorMensajeDAO {
 		boolean existe = true;
 
 		// Si la entidad está registrada no la registra de nuevo
-		try {
-			eMensaje = servPersistencia.recuperarEntidad(mensaje.getCodigo());
-		} catch (NullPointerException e) {
-			existe = false;
+		if (mensaje.getCodigo() <= 0) {
+		    existe = false;
+		} else {
+		    try {
+		        eMensaje = servPersistencia.recuperarEntidad(mensaje.getCodigo());
+		    } catch (NullPointerException e) {
+		        existe = false;
+		    }
 		}
-		if (existe) {
-			return;
-		}
+
+
 
 		// registrar primero los atributos que son objetos
 		// registrar usuario emisor del mensaje

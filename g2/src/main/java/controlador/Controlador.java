@@ -85,6 +85,8 @@ public enum Controlador {
 		}
 
 		Usuario cliente = clienteOpt.get();
+		System.out.println(cliente.getContactos().stream().map(c->c.getMensajesEnviados()).collect(Collectors.toList()));
+		
 
 		// Si la password esta bien inicia sesion
 		if (cliente.getContraseña().equals(passwd)) {
@@ -137,15 +139,18 @@ public enum Controlador {
 
 	public List<Mensaje> getMensajes(Contacto contacto) {
 		// Si la conversacion es conmigo mismo es suficiente con mostrar mis mensajes
+		// Recuperamos todos los contactos
+		
 		if (contacto instanceof ContactoIndividual && !((ContactoIndividual) contacto).esUsuario(usuarioActual)) {
 			return Stream
-					.concat(contacto.getMensajes().stream(),
+					.concat(contacto.getMensajesEnviados().stream(),
 							contacto.getMensajesRecibidos(Optional.of(usuarioActual)).stream())
 					.sorted().collect(Collectors.toList());
 		} else {
 			// Dentro de los enviados estan contenidos todos los mensajes
-			return contacto.getMensajes().stream().sorted().collect(Collectors.toList());
+			return contacto.getMensajesEnviados().stream().sorted().collect(Collectors.toList());
 		}
+		
 	}
 
 	// Devuelvo el último mensaje con ese contacto.
@@ -192,12 +197,14 @@ public enum Controlador {
 		contacto.enviarMensaje(mensaje);
 
 		adaptadorMensaje.registrarMensaje(mensaje);
-
 		if (contacto instanceof ContactoIndividual) {
 			adaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
 		} //else {
 			//adaptadorGrupo.modificarGrupo((Grupo) contacto);
 		//}
+		System.out.println(usuarioActual.getContactos().stream().map(c->c.getMensajesEnviados()).collect(Collectors.toList()));
+		System.out.println("el usuario tiene ahora estos mensajes: " + adaptadorContactoIndividual.recuperarContacto(contacto.getCodigo()).getMensajesEnviados());
+		
 		
 	}
 

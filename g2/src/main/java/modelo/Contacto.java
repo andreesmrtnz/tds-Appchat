@@ -7,10 +7,15 @@ import java.util.Optional;
 public abstract class Contacto {
     private String nombre;
     private int codigo;
-    private List<Mensaje> mensajes = new LinkedList<Mensaje>();
+    private List<Mensaje> mensajes;
 
-	public Contacto(String nombre2) {
-		this.nombre = nombre2;
+    public Contacto(String nombre) {
+		this(nombre, new LinkedList<>());
+	}
+    
+	public Contacto(String nombre, List<Mensaje> mensajes) {
+		this.nombre = nombre;
+		this.mensajes = mensajes;
 	}
 
 	public String getNombre() {
@@ -29,7 +34,7 @@ public abstract class Contacto {
 		this.codigo = codigo;
 	}
 
-	public List<Mensaje> getMensajes() {
+	public List<Mensaje> getMensajesEnviados() {
 		return mensajes;
 	}
 
@@ -43,5 +48,9 @@ public abstract class Contacto {
 		mensajes.add(message);
 	}
     // Getters y Setters
+	@Override
+	public String toString() {
+		return nombre;
+	}
 }
 

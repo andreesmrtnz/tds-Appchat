@@ -14,8 +14,6 @@ public class Usuario {
 	private String imagen;
 	private String saludo;
 	private Descuento descuento;
-	private List<Mensaje> enviados = new ArrayList<>();
-	private List<Mensaje> recibidos = new ArrayList<>();
 	private List<ContactoIndividual> contactos = new ArrayList<>();
 
 	public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen,
@@ -37,28 +35,6 @@ public class Usuario {
 			}
 		}
 		return null;
-	}
-
-	public List<Mensaje> getChatMensajes(Usuario otroUsuario) {
-		List<Mensaje> chatMensajes = new ArrayList<>();
-		for (Mensaje mensaje : enviados) {
-			if (mensaje.getReceptor().equals(otroUsuario)) {
-				chatMensajes.add(mensaje);
-			}
-		}
-		for (Mensaje mensaje : recibidos) {
-			if (mensaje.getEmisor().equals(otroUsuario)) {
-				chatMensajes.add(mensaje);
-			}
-		}
-		// Ordenar mensajes por fecha y hora
-		chatMensajes.sort((m1, m2) -> {
-			if (m1.getFecha().equals(m2.getFecha())) {
-				return m1.getHora().compareTo(m2.getHora());
-			}
-			return m1.getFecha().compareTo(m2.getFecha());
-		});
-		return chatMensajes;
 	}
 
 	public String getUsuario() {
@@ -89,14 +65,6 @@ public class Usuario {
 		return descuento;
 	}
 
-	public List<Mensaje> getEnviados() {
-		return enviados;
-	}
-
-	public List<Mensaje> getRecibidos() {
-		return recibidos;
-	}
-
 	public List<ContactoIndividual> getContactos() {
 		return contactos;
 	}
@@ -125,5 +93,32 @@ public class Usuario {
 		return contactos.stream().anyMatch(c -> c instanceof ContactoIndividual && c.getNombre().equals(telefono));
 	}
 
+	@Override
+	public String toString() {
+		return "User [codigo=" + codigo + ", nombre=" + usuario + ", fechaNacimiento="
+				+ fechaNacimiento + ", numTelefono=" + telefono + ", password=" + contraseña
+				 + ", saludo=" + saludo + ", contactos=" + contactos + ", rol=" + descuento + "]";
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((usuario == null) ? 0 : usuario.hashCode());
+		result = prime * result + Integer.parseInt(telefono);
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Usuario other = (Usuario) obj;
+		return usuario.equals(other.usuario) || telefono == other.telefono;
+	}
 	// Getters y Setters
 }
