@@ -48,7 +48,7 @@ public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mens
     public Component getListCellRendererComponent(JList<? extends Mensaje> list, Mensaje mensaje, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
         // Configura el nombre del usuario y el texto del mensaje
-        userLabel.setText("De: " + mensaje.getEmisor() + " a: " + mensaje.getReceptor());
+        userLabel.setText("De: " + mensaje.getEmisor().getUsuario() + " a: " + mensaje.getReceptor().getNombre());
         messageText.setText(mensaje.getTexto());
 
         // Carga una imagen de ejemplo con base en el emisor

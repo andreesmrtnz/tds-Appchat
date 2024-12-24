@@ -180,8 +180,12 @@ public class VentanaMain extends JFrame implements Observer {
 		contentPane.add(conversaciones, gbc_conversaciones);
 		conversaciones.setLayout(new BorderLayout(0, 0));
 
-		// Cambiar el modelo del JList para usar objetos Mensaje
+		
+	        
 		DefaultListModel<Mensaje> mensajeModel = new DefaultListModel<>();
+		// Cambiar el modelo del JList para usar objetos Mensaje
+		cargarUltimasConersaciones(mensajeModel);
+        
 		list = new JList<>(mensajeModel); // JList ahora usa el modelo de Mensaje
 		list.setCellRenderer(new MensajeCellRenderer()); // Configurar el renderizador personalizado
 		conversaciones.add(list, BorderLayout.CENTER);
@@ -249,6 +253,15 @@ public class VentanaMain extends JFrame implements Observer {
 		    }
 		});
 	}
+	private void cargarUltimasConersaciones(DefaultListModel<Mensaje> mensajeModel) {
+		for (Contacto c: controlador.getContactosUsuarioActual()) {
+			mensajeModel.addElement(controlador.getUltimoMensaje(c));
+		}
+		
+	}
+
+
+
 	@Override
     public void actualizar() {
         // Este método se llama cuando el controlador notifica que se ha agregado un contacto
