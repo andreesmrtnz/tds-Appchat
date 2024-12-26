@@ -43,6 +43,10 @@ public class Grupo extends Contacto {
 		imagen = i;
 	}
 	
+	public void setEmisor(Usuario user) {
+		emisor = user;
+	}
+	
 	public void setParticipantes(List<ContactoIndividual> contactos) {
 		this.participantes = contactos;
 	}

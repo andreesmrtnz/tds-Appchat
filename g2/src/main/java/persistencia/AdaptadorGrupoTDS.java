@@ -13,12 +13,8 @@ import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
-
-import modelo.Venta;
-import modelo.Cliente;
 import modelo.ContactoIndividual;
 import modelo.Grupo;
-import modelo.LineaVenta;
 import modelo.Mensaje;
 import modelo.Usuario;
 
@@ -62,14 +58,14 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 		registrarSiNoExistenContactos(group.getParticipantes());
 
 		// Registramos a nuestro usuario administrador si no existe.
-		registrarSiNoExisteAdmin(group.getAdmin());
+		registrarSiNoExisteEmisor(group.getEmisor());
 
 		// Atributos propios del grupo
 		eGroup.setNombre("grupo");
 		eGroup.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad("nombre", group.getNombre()),
 				new Propiedad("mensajesRecibidos", obtenerCodigosMensajesRecibidos(group.getMensajesEnviados())),
 				new Propiedad("integrantes", obtenerCodigosContactosIndividual(group.getParticipantes())),
-				new Propiedad("admin", String.valueOf(group.getAdmin().getCodigo())))));
+				new Propiedad("emisor", String.valueOf(group.getEmisor().getCodigo())))));
 
 		// Registrar entidad usuario
 		eGroup = servPersistencia.registrarEntidad(eGroup);
@@ -83,20 +79,27 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 
 	@Override
 	public void modificarGrupo(Grupo group) {
-		Entidad eGroup = servPersistencia.recuperarEntidad(group.getCodigo());
+	    Entidad eGroup = servPersistencia.recuperarEntidad(group.getCodigo());
 
-		// Se da el cambiazo a las propiedades del grupo
-		servPersistencia.eliminarPropiedadEntidad(eGroup, "nombre");
-		servPersistencia.anadirPropiedadEntidad(eGroup, "nombre", group.getNombre());
-		servPersistencia.eliminarPropiedadEntidad(eGroup, "mensajesRecibidos");
-		servPersistencia.anadirPropiedadEntidad(eGroup, "mensajesRecibidos",
-				obtenerCodigosMensajesRecibidos(group.getMensajesEnviados()));
-		servPersistencia.eliminarPropiedadEntidad(eGroup, "integrantes");
-		servPersistencia.anadirPropiedadEntidad(eGroup, "integrantes",
-				obtenerCodigosContactosIndividual(group.getParticipantes()));
-		servPersistencia.eliminarPropiedadEntidad(eGroup, "admin");
-		servPersistencia.anadirPropiedadEntidad(eGroup, "admin", String.valueOf(group.getAdmin().getCodigo()));
+	    for (Propiedad prop : eGroup.getPropiedades()) {
+	        switch (prop.getNombre()) {
+	            case "nombre":
+	                prop.setValor(group.getNombre());
+	                break;
+	            case "mensajesRecibidos":
+	                prop.setValor(obtenerCodigosMensajesRecibidos(group.getMensajesEnviados()));
+	                break;
+	            case "integrantes":
+	                prop.setValor(obtenerCodigosContactosIndividual(group.getParticipantes()));
+	                break;
+	            case "emisor":
+	                prop.setValor(String.valueOf(group.getEmisor().getCodigo()));
+	                break;
+	        }
+	        servPersistencia.modificarPropiedad(prop);
+	    }
 	}
+
 
 	@Override
 	public Grupo recuperarGrupo(int codigo) {
@@ -112,7 +115,7 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 		String nombre = null;
 		nombre = servPersistencia.recuperarPropiedadEntidad(eGroup, "nombre");
 
-		Grupo group = new Grupo(nombre, new LinkedList<Mensaje>(), new LinkedList<ContactoIndividual>(), null);
+		Grupo group = new Grupo(nombre, new LinkedList<Mensaje>(), new LinkedList<ContactoIndividual>(), null, "");
 		group.setCodigo(codigo);
 
 		// Metemos al grupo en el pool antes de llamar a otros adaptadores
@@ -121,7 +124,7 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 		// Mensajes que el grupo tiene
 		List<Mensaje> mensajes = obtenerMensajesDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eGroup, "mensajesRecibidos"));
 		for (Mensaje m : mensajes)
-			group.sendMessage(m);
+			group.enviarMensaje(m);
 				
 		// Contactos que el grupo tiene
 		List<ContactoIndividual> contactos = obtenerIntegrantesDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eGroup, "integrantes"));
@@ -129,7 +132,7 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 			group.addIntegrante(c);
 
 		// Obtener admin
-		group.cambiarAdmin(obtenerUsuarioDesdeCodigo(servPersistencia.recuperarPropiedadEntidad(eGroup, "admin")));
+		group.setEmisor(obtenerUsuarioDesdeCodigo(servPersistencia.recuperarPropiedadEntidad(eGroup, "emisor")));
 
 		// Devolvemos el objeto grupo
 		return group;
@@ -159,9 +162,9 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 		contacts.stream().forEach(c -> adaptadorContactos.registrarContacto(c));
 	}
 
-	private void registrarSiNoExisteAdmin(Usuario admin) {
+	private void registrarSiNoExisteEmisor(Usuario emisor) {
 		AdaptadorUsuarioTDS adaptadorUsuarios = AdaptadorUsuarioTDS.getUnicaInstancia();
-		adaptadorUsuarios.registrarUsuario(admin);
+		adaptadorUsuarios.registrarUsuario(emisor);
 	}
 
 	private String obtenerCodigosContactosIndividual(List<ContactoIndividual> contactosIndividuales) {

@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,10 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import controlador.Controlador;
-import modelo.ContactoIndividual;
 
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
 
 public class VentanaContactos extends JFrame {
 
@@ -26,94 +28,125 @@ public class VentanaContactos extends JFrame {
     private JButton btnMoverDerecha;
     private JButton btnMoverIzquierda;
     private Controlador controlador;
+    private JTextField textField;
 
     public VentanaContactos() {
+    	controlador = Controlador.INSTANCE;
         setTitle("Gestión de Grupos");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        setSize(500, 300);
+        setSize(849, 456);
         setLocationRelativeTo(null);
 
         JPanel contentPane = new JPanel();
         setContentPane(contentPane);
 
-        // Listado de contactos
+        // Modelos de las listas
         DefaultListModel<String> modeloContactos = new DefaultListModel<>();
-        modeloContactos.addAll(controlador.INSTANCE.getContactosNombre());
+        DefaultListModel<String> modeloGrupo = new DefaultListModel<>();
+
+        // Cargar contactos desde el controlador
+        modeloContactos.addAll(controlador.getContactosNombre());
+
         GridBagLayout gbl_contentPane = new GridBagLayout();
         gbl_contentPane.columnWidths = new int[]{7, 111, 49, 100, 0, 0};
-        gbl_contentPane.rowHeights = new int[]{6, 150, 23, 0, 0};
-        gbl_contentPane.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-        gbl_contentPane.rowWeights = new double[]{1.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+        gbl_contentPane.rowHeights = new int[]{6, 0, 0, 150, 23, 0, 0, 0};
+        gbl_contentPane.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+        gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0};
         contentPane.setLayout(gbl_contentPane);
-                        
-                                listaContactos = new JList<>(modeloContactos);
-                                JScrollPane scrollContactos = new JScrollPane(listaContactos);
-                                scrollContactos.setPreferredSize(new Dimension(100, 150));
-                                GridBagConstraints gbc_scrollContactos = new GridBagConstraints();
-                                gbc_scrollContactos.fill = GridBagConstraints.HORIZONTAL;
-                                gbc_scrollContactos.insets = new Insets(0, 0, 5, 5);
-                                gbc_scrollContactos.gridx = 1;
-                                gbc_scrollContactos.gridy = 1;
-                                contentPane.add(scrollContactos, gbc_scrollContactos);
-                        
-                                // Botón para mover a la derecha
-                                btnMoverDerecha = new JButton(">>");
-                                GridBagConstraints gbc_btnMoverDerecha = new GridBagConstraints();
-                                gbc_btnMoverDerecha.insets = new Insets(0, 0, 5, 5);
-                                gbc_btnMoverDerecha.gridx = 2;
-                                gbc_btnMoverDerecha.gridy = 1;
-                                contentPane.add(btnMoverDerecha, gbc_btnMoverDerecha);
-                
-                        //listaGrupo = new JList<>(modeloGrupo);
-                        JScrollPane scrollGrupo = new JScrollPane();
-                        scrollGrupo.setPreferredSize(new Dimension(100, 150));
-                        GridBagConstraints gbc_scrollGrupo = new GridBagConstraints();
-                        gbc_scrollGrupo.fill = GridBagConstraints.HORIZONTAL;
-                        gbc_scrollGrupo.insets = new Insets(0, 0, 5, 5);
-                        gbc_scrollGrupo.gridx = 3;
-                        gbc_scrollGrupo.gridy = 1;
-                        contentPane.add(scrollGrupo, gbc_scrollGrupo);
-                
-                        // Botón Añadir Contacto
-                        btnAgregarContacto = new JButton("Añadir Contacto");
-                        
-                        btnAgregarContacto.addActionListener(new ActionListener() {
-                        	public void actionPerformed(ActionEvent e) {
-                        		JFrame agregarContacto = new AlertaAgregarContacto();
-                        		agregarContacto.setVisible(true);
-                        		setVisible(false);
-                        		
-                        	}
-                        });
-                        GridBagConstraints gbc_btnAgregarContacto = new GridBagConstraints();
-                        gbc_btnAgregarContacto.fill = GridBagConstraints.HORIZONTAL;
-                        gbc_btnAgregarContacto.insets = new Insets(0, 0, 5, 5);
-                        gbc_btnAgregarContacto.gridx = 1;
-                        gbc_btnAgregarContacto.gridy = 2;
-                        contentPane.add(btnAgregarContacto, gbc_btnAgregarContacto);
-        
-                // Botón para mover a la izquierda
-                btnMoverIzquierda = new JButton("<<");
-                GridBagConstraints gbc_btnMoverIzquierda = new GridBagConstraints();
-                gbc_btnMoverIzquierda.insets = new Insets(0, 0, 5, 5);
-                gbc_btnMoverIzquierda.gridx = 2;
-                gbc_btnMoverIzquierda.gridy = 2;
-                contentPane.add(btnMoverIzquierda, gbc_btnMoverIzquierda);
-        
-                // Botón Añadir Grupo
-                btnAgregarGrupo = new JButton("Añadir Grupo");
-                GridBagConstraints gbc_btnAgregarGrupo = new GridBagConstraints();
-                gbc_btnAgregarGrupo.fill = GridBagConstraints.HORIZONTAL;
-                gbc_btnAgregarGrupo.insets = new Insets(0, 0, 5, 5);
-                gbc_btnAgregarGrupo.gridx = 3;
-                gbc_btnAgregarGrupo.gridy = 2;
-                contentPane.add(btnAgregarGrupo, gbc_btnAgregarGrupo);
+
+        JLabel lblNewLabel = new JLabel("Nombre del grupo:");
+        GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+        gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+        gbc_lblNewLabel.gridx = 3;
+        gbc_lblNewLabel.gridy = 1;
+        contentPane.add(lblNewLabel, gbc_lblNewLabel);
+
+        textField = new JTextField();
+        GridBagConstraints gbc_textField = new GridBagConstraints();
+        gbc_textField.insets = new Insets(0, 0, 5, 5);
+        gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+        gbc_textField.gridx = 3;
+        gbc_textField.gridy = 2;
+        contentPane.add(textField, gbc_textField);
+        textField.setColumns(10);
+
+        // Listado de contactos
+        listaContactos = new JList<>(modeloContactos);
+        JScrollPane scrollContactos = new JScrollPane(listaContactos);
+        scrollContactos.setPreferredSize(new Dimension(100, 150));
+        GridBagConstraints gbc_scrollContactos = new GridBagConstraints();
+        gbc_scrollContactos.fill = GridBagConstraints.BOTH;
+        gbc_scrollContactos.insets = new Insets(0, 0, 5, 5);
+        gbc_scrollContactos.gridx = 1;
+        gbc_scrollContactos.gridy = 3;
+        contentPane.add(scrollContactos, gbc_scrollContactos);
 
         // Listado del grupo
-        DefaultListModel<String> modeloGrupo = new DefaultListModel<>();
-        modeloGrupo.addElement("contacto4");
-        modeloGrupo.addElement("contacto5");
-    }
+        listaGrupo = new JList<>(modeloGrupo);
+        JScrollPane scrollGrupo = new JScrollPane(listaGrupo);
+        scrollGrupo.setPreferredSize(new Dimension(100, 150));
+        GridBagConstraints gbc_scrollGrupo = new GridBagConstraints();
+        gbc_scrollGrupo.fill = GridBagConstraints.BOTH;
+        gbc_scrollGrupo.insets = new Insets(0, 0, 5, 5);
+        gbc_scrollGrupo.gridx = 3;
+        gbc_scrollGrupo.gridy = 3;
+        contentPane.add(scrollGrupo, gbc_scrollGrupo);
 
-    
+        // Botón para mover a la derecha
+        btnMoverDerecha = new JButton(">>");
+        btnMoverDerecha.addActionListener(e -> {
+            String selectedContact = listaContactos.getSelectedValue();
+            if (selectedContact != null) {
+                modeloContactos.removeElement(selectedContact);
+                modeloGrupo.addElement(selectedContact);
+            }
+        });
+        GridBagConstraints gbc_btnMoverDerecha = new GridBagConstraints();
+        gbc_btnMoverDerecha.insets = new Insets(0, 0, 5, 5);
+        gbc_btnMoverDerecha.gridx = 2;
+        gbc_btnMoverDerecha.gridy = 3;
+        contentPane.add(btnMoverDerecha, gbc_btnMoverDerecha);
+
+        // Botón para mover a la izquierda
+        btnMoverIzquierda = new JButton("<<");
+        btnMoverIzquierda.addActionListener(e -> {
+            String selectedContact = listaGrupo.getSelectedValue();
+            if (selectedContact != null) {
+                modeloGrupo.removeElement(selectedContact);
+                modeloContactos.addElement(selectedContact);
+            }
+        });
+        GridBagConstraints gbc_btnMoverIzquierda = new GridBagConstraints();
+        gbc_btnMoverIzquierda.insets = new Insets(0, 0, 5, 5);
+        gbc_btnMoverIzquierda.gridx = 2;
+        gbc_btnMoverIzquierda.gridy = 4;
+        contentPane.add(btnMoverIzquierda, gbc_btnMoverIzquierda);
+
+        // Botón Añadir Grupo
+        btnAgregarGrupo = new JButton("Añadir Grupo");
+        btnAgregarGrupo.addActionListener(e -> {
+            String nombreGrupo = textField.getText().trim();
+            if (nombreGrupo.isEmpty()) {
+                // Validar si el nombre del grupo está vacío
+                System.out.println("El nombre del grupo no puede estar vacío.");
+                return;
+            }
+            List<String> participantes = new ArrayList<>();
+            for (int i = 0; i < modeloGrupo.size(); i++) {
+                participantes.add(modeloGrupo.get(i));
+            }
+            if (participantes.isEmpty()) {
+                System.out.println("El grupo debe tener al menos un contacto.");
+                return;
+            }
+            controlador.crearGrupo(nombreGrupo, participantes);
+            modeloGrupo.clear();
+            textField.setText("");
+        });
+        GridBagConstraints gbc_btnAgregarGrupo = new GridBagConstraints();
+        gbc_btnAgregarGrupo.insets = new Insets(0, 0, 5, 5);
+        gbc_btnAgregarGrupo.gridx = 3;
+        gbc_btnAgregarGrupo.gridy = 5;
+        contentPane.add(btnAgregarGrupo, gbc_btnAgregarGrupo);
+    }
 }
