@@ -72,6 +72,8 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 				new Propiedad("telefono", String.valueOf(usuario.getTelefono())),
 				new Propiedad("password", usuario.getContraseña()), new Propiedad("imagenes", usuario.getImagen()),
 				new Propiedad("saludo", usuario.getSaludo()),
+				new Propiedad("gruposemisor", obtenerCodigosGruposEmisor(usuario.getGruposEmisor())),
+				new Propiedad("grupos", obtenerCodigosGrupo(usuario.getContactos())),
 				new Propiedad("contactos", obtenerCodigosContactoIndividual(usuario.getContactos())) // Aquí gestionamos
 																										// los contactos
 		)));
@@ -121,6 +123,12 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 
 		// Añadir al pool
 		PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
+		
+		// Grupos que el usuario administra
+		List<Grupo> gruposEmisor = obtenerGruposDesdeCodigos(
+				servPersistencia.recuperarPropiedadEntidad(eUsuario, "gruposemisor"));
+		for (Grupo g : gruposEmisor)
+			usuario.addGrupoEmisor(g);
 
 		// Contactos que el usuario tiene
 		List<ContactoIndividual> contactos = obtenerContactosDesdeCodigos(
@@ -128,6 +136,12 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 
 		for (ContactoIndividual c : contactos)
 			usuario.addContacto(c);
+
+		// Grupos que el usuario tiene
+		List<Grupo> grupos = obtenerGruposDesdeCodigos(servPersistencia.recuperarPropiedadEntidad(eUsuario, "grupos"));
+
+		for (Grupo g : grupos)
+			usuario.addGrupo(g);
 
 		return usuario;
 	}
@@ -159,6 +173,12 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 			case "contactos":
 				prop.setValor(obtenerCodigosContactoIndividual(user.getContactos()));
 				break;
+			case "gruposemisor":
+				prop.setValor(obtenerCodigosGruposEmisor(user.getGruposEmisor()));
+				break;
+			case "grupos":
+				prop.setValor(obtenerCodigosGrupo(user.getContactos()));
+				break;
 			}
 			servPersistencia.modificarPropiedad(prop);
 		}
@@ -186,6 +206,11 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 				adaptadorGrupos.registrarGrupo((Grupo) c);
 			}
 		});
+	}
+
+	private void registrarSiNoExistenGrupos(List<Grupo> grupos) {
+		AdaptadorGrupoTDS adaptadorGA = AdaptadorGrupoTDS.getUnicaInstancia();
+		grupos.stream().forEach(g -> adaptadorGA.registrarGrupo(g));
 	}
 
 	private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
@@ -222,5 +247,13 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 				.map(c -> String.valueOf(c.getCodigo())).reduce("", (l, c) -> l + c + " ") // concateno todos los
 																							// codigos
 				.trim();
+	}
+
+	private String obtenerCodigosGruposEmisor(List<Grupo> gruposEmisor) {
+		String grupos = "";
+		for (Grupo grupo : gruposEmisor) {
+			grupos += grupo.getCodigo() + " ";
+		}
+		return grupos.trim();
 	}
 }

@@ -5,25 +5,24 @@ import java.util.List;
 import java.util.Optional;
 
 public class ContactoIndividual extends Contacto {
-    private Usuario usuario;
-    private String movil;
+	private Usuario usuario;
+	private String movil;
 
-    public ContactoIndividual(String nombre, Usuario usuario, String movil) {
-        super(nombre);
-    	this.usuario = usuario;
-        this.movil = movil;
-    }
-    
-    public ContactoIndividual(String nombre, LinkedList<Mensaje> mensajes, String movil, Usuario usuario) {
+	public ContactoIndividual(String nombre, Usuario usuario, String movil) {
+		super(nombre);
+		this.usuario = usuario;
+		this.movil = movil;
+	}
+
+	public ContactoIndividual(String nombre, LinkedList<Mensaje> mensajes, String movil, Usuario usuario) {
 		super(nombre, mensajes);
 		this.movil = movil;
 		this.usuario = usuario;
 	}
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
-    
+	public Usuario getUsuario() {
+		return usuario;
+	}
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
@@ -40,7 +39,7 @@ public class ContactoIndividual extends Contacto {
 	public boolean esUsuario(Usuario otroUsuario) {
 		return usuario.equals(otroUsuario);
 	}
-	
+
 	public ContactoIndividual getContacto(Usuario usuario) {
 		return this.usuario.getContactos().stream().filter(c -> c instanceof ContactoIndividual)
 				.map(c -> (ContactoIndividual) c).filter(c -> c.getUsuario().equals(usuario)).findAny().orElse(null);
@@ -54,8 +53,24 @@ public class ContactoIndividual extends Contacto {
 		} else
 			return new LinkedList<>();
 	}
-    
-	
+
+	// Añade al contacto al grupo en cuestion
+	public void addGrupo(Grupo grupo) {
+		usuario.addGrupo(grupo);
+	}
+
+	// Expulsamos al contacto del grupo en cuestión
+	public void eliminarGrupo(Grupo grupo) {
+		usuario.removeContact(grupo);
+	}
+
+	public void modificarGrupo(Grupo g) {
+		List<Grupo> grupos = usuario.getGrupos();
+
+		grupos.remove(g);
+		grupos.add(g);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -63,7 +78,7 @@ public class ContactoIndividual extends Contacto {
 		result = prime * result + Integer.parseInt(movil);
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -77,7 +92,5 @@ public class ContactoIndividual extends Contacto {
 			return false;
 		return true;
 	}
-    
-    
-}
 
+}

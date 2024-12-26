@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Usuario {
 	private int codigo;
@@ -14,6 +15,7 @@ public class Usuario {
 	private String imagen;
 	private String saludo;
 	private Descuento descuento;
+	private List<Grupo> gruposEmisor;
 	private List<Contacto> contactos = new ArrayList<>();
 
 	public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen,
@@ -80,6 +82,10 @@ public class Usuario {
 	public int getCodigo() {
 		return codigo;
 	}
+	
+	public List<Grupo> getGruposEmisor() {
+		return gruposEmisor;
+	}
 
 	public void setCodigo(int codigo) {
 		this.codigo = codigo;
@@ -91,6 +97,47 @@ public class Usuario {
 
 	public boolean tieneContacto(String telefono) {
 		return contactos.stream().anyMatch(c -> c instanceof ContactoIndividual && c.getNombre().equals(telefono));
+	}
+	
+	public List<Grupo> getGrupos() {
+		return contactos.stream().filter(c -> c instanceof Grupo).map(c -> (Grupo) c).collect(Collectors.toList());
+	}
+	
+	public List<ContactoIndividual> getContactosIndividuales() {
+		return contactos.stream().filter(c -> c instanceof ContactoIndividual).map(c -> (ContactoIndividual) c)
+				.collect(Collectors.toList());
+	}
+	
+	public void addGrupoEmisor(Grupo g) {
+		gruposEmisor.add(g);
+	}
+
+
+	public void addGrupo(Grupo g) {
+		contactos.add(g);
+	}
+	
+	public void modificarGrupo(Grupo g) {
+		List<Grupo> grupos = contactos.stream().filter(c -> c instanceof Grupo).map(c -> (Grupo) c)
+				.collect(Collectors.toList());
+		for (int i = 0; i < grupos.size(); i++)
+			if (grupos.get(i).getCodigo() == g.getCodigo())
+				grupos.set(i, g);
+	}
+
+	public void removeContact(Contacto c) {
+		contactos.remove(c);
+		if (c instanceof Grupo && ((Grupo) c).getEmisor().getCodigo() == this.codigo) {
+			gruposEmisor.remove((Grupo) c);
+		}
+	}
+	
+	public boolean hasGroup(String nombreGrupo) {
+		return contactos.stream().anyMatch(c -> c instanceof Grupo && c.getNombre().equals(nombreGrupo));
+	}
+
+	public boolean hasIndividualContact(String nomContacto) {
+		return contactos.stream().anyMatch(c -> c instanceof ContactoIndividual && c.getNombre().equals(nomContacto));
 	}
 
 	@Override

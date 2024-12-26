@@ -143,11 +143,11 @@ public enum Controlador {
 			return null;
 		}
 
-		Group nuevoGrupo = new Group(nombre, new LinkedList<Message>(), participantes, usuarioActual);
+		Grupo nuevoGrupo = new Grupo(nombre, new LinkedList<Mensaje>(), participantes, usuarioActual, "");
 
 		// Se añade el grupo al usuario actual y al resto de participantes
 		usuarioActual.addGrupo(nuevoGrupo);
-		usuarioActual.addGrupoAdmin(nuevoGrupo);
+		usuarioActual.addGrupoEmisor(nuevoGrupo);
 		participantes.stream().forEach(p -> p.addGrupo(nuevoGrupo));
 
 		// Conexion con persistencia
@@ -156,21 +156,21 @@ public enum Controlador {
 		adaptadorUsuario.modificarUsuario(usuarioActual);
 
 		participantes.stream().forEach(p -> {
-			User usuario = p.getUsuario();
+			Usuario usuario = p.getUsuario();
 			adaptadorUsuario.modificarUsuario(usuario);
 		});
 
 		return nuevoGrupo;
 	}
 	
-	public Group modificarGrupo(Group grupo, String nombre, List<IndividualContact> participantes) {
+	public Grupo modificarGrupo(Grupo grupo, String nombre, List<ContactoIndividual> participantes) {
 		grupo.setNombre(nombre);
 
 		// Creo listas para las altas y las bajas
-		List<IndividualContact> nuevos = new LinkedList<>();
-		List<IndividualContact> mantenidos = new LinkedList<>();
+		List<ContactoIndividual> nuevos = new LinkedList<>();
+		List<ContactoIndividual> mantenidos = new LinkedList<>();
 
-		for (IndividualContact contacto : participantes) {
+		for (ContactoIndividual contacto : participantes) {
 			if (grupo.hasParticipante(contacto.getUsuario())) {
 				mantenidos.add(contacto);
 			} else {
@@ -178,7 +178,7 @@ public enum Controlador {
 			}
 		}
 
-		List<IndividualContact> eliminados = new LinkedList<>(grupo.getParticipantes());
+		List<ContactoIndividual> eliminados = new LinkedList<>(grupo.getParticipantes());
 		eliminados.removeAll(participantes);
 
 		// Le modifico el grupo si el usuario ya existia. Si es nuevo, se lo añado
@@ -192,20 +192,20 @@ public enum Controlador {
 		});
 
 		// Se le cambia al grupo la lista de participantes
-		grupo.setIntegrantes(participantes);
+		grupo.setParticipantes(participantes);
 
 		// Conexion con persistencia
 		adaptadorGrupo.modificarGrupo(grupo);
 
 		// Actualiza los usuarios que no estaban antes en el grupo
-		nuevos.stream().map(IndividualContact::getUsuario).forEach(u -> adaptadorUsuario.modificarUsuario(u));
+		nuevos.stream().map(ContactoIndividual::getUsuario).forEach(u -> adaptadorUsuario.modificarUsuario(u));
 
 		return grupo;
 	}
 	
-	public List<Group> getGruposAdminUsuarioActual() {
+	public List<Grupo> getGruposEmisorUsuarioActual() {
 		// Devuelvo una lista de mis grupos. Saco el código del usuario actual.
-		return usuarioActual.getGruposAdmin();
+		return usuarioActual.getGruposEmisor();
 	}
 
 	public List<Mensaje> getMensajes(Contacto contacto) {
