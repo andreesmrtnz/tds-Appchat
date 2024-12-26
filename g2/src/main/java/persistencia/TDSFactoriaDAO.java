@@ -18,8 +18,7 @@ public class TDSFactoriaDAO extends FactoriaDAO {
 
 	@Override
 	public IAdaptadorGrupoDAO getGrupoDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return AdaptadorGrupoTDS.getUnicaInstancia();
 	}
 
 	@Override

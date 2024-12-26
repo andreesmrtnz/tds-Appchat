@@ -14,7 +14,7 @@ public class Usuario {
 	private String imagen;
 	private String saludo;
 	private Descuento descuento;
-	private List<ContactoIndividual> contactos = new ArrayList<>();
+	private List<Contacto> contactos = new ArrayList<>();
 
 	public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen,
 			String saludo) {
@@ -65,13 +65,13 @@ public class Usuario {
 		return descuento;
 	}
 
-	public List<ContactoIndividual> getContactos() {
+	public List<Contacto> getContactos() {
 		return contactos;
 	}
 
 	public List<String> getContactosNombre() {
 		List<String> nombres = new ArrayList<>();
-	for (ContactoIndividual contacto: contactos) {
+	for (Contacto contacto: contactos) {
     	nombres.add(contacto.getNombre());
     }
 		return nombres;

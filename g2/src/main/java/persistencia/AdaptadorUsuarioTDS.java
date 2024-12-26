@@ -15,6 +15,7 @@ import beans.Entidad;
 import beans.Propiedad;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Grupo;
 import modelo.Usuario;
 
 public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
@@ -55,6 +56,9 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 		if (eUsuario != null)
 			return;
 
+		// registrar primero los atributos que son objetos
+		// registrar grupos administrados
+		registrarSiNoExistenGrupos(usuario.getGrupos());
 		// Registrar los contactos
 		registrarSiNoExistenContactos(usuario.getContactos());
 
@@ -130,36 +134,35 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 
 	@Override
 	public void modificarUsuario(Usuario user) {
-	    Entidad eUser = servPersistencia.recuperarEntidad(user.getCodigo());
+		Entidad eUser = servPersistencia.recuperarEntidad(user.getCodigo());
 
-	    for (Propiedad prop : eUser.getPropiedades()) {
-	        switch (prop.getNombre()) {
-	            case "nombre":
-	                prop.setValor(user.getUsuario());
-	                break;
-	            case "fechanacimiento":
-	                prop.setValor(user.getFechaNacimiento() != null ? dateFormat.format(user.getFechaNacimiento()) : "");
-	                break;
-	            case "telefono":
-	                prop.setValor(user.getTelefono());
-	                break;
-	            case "password":
-	                prop.setValor(user.getContraseña());
-	                break;
-	            case "saludo":
-	                prop.setValor(user.getSaludo());
-	                break;
-	            case "imagenes":
-	                prop.setValor(user.getImagen());
-	                break;
-	            case "contactos":
-	                prop.setValor(obtenerCodigosContactoIndividual(user.getContactos()));
-	                break;
-	        }
-	        servPersistencia.modificarPropiedad(prop);
-	    }
+		for (Propiedad prop : eUser.getPropiedades()) {
+			switch (prop.getNombre()) {
+			case "nombre":
+				prop.setValor(user.getUsuario());
+				break;
+			case "fechanacimiento":
+				prop.setValor(user.getFechaNacimiento() != null ? dateFormat.format(user.getFechaNacimiento()) : "");
+				break;
+			case "telefono":
+				prop.setValor(user.getTelefono());
+				break;
+			case "password":
+				prop.setValor(user.getContraseña());
+				break;
+			case "saludo":
+				prop.setValor(user.getSaludo());
+				break;
+			case "imagenes":
+				prop.setValor(user.getImagen());
+				break;
+			case "contactos":
+				prop.setValor(obtenerCodigosContactoIndividual(user.getContactos()));
+				break;
+			}
+			servPersistencia.modificarPropiedad(prop);
+		}
 	}
-
 
 	@Override
 	public List<Usuario> recuperarTodosUsuarios() {
@@ -173,9 +176,16 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 	}
 
 	// -------------------Funciones auxiliares-----------------------------
-	private void registrarSiNoExistenContactos(List<ContactoIndividual> contactos) {
+	private void registrarSiNoExistenContactos(List<Contacto> contactos) {
 		AdaptadorContactoIndividualTDS adaptadorContactos = AdaptadorContactoIndividualTDS.getUnicaInstancia();
-		contactos.stream().forEach(c -> adaptadorContactos.registrarContacto(c));
+		AdaptadorGrupoTDS adaptadorGrupos = AdaptadorGrupoTDS.getUnicaInstancia();
+		contactos.stream().forEach(c -> {
+			if (c instanceof ContactoIndividual) {
+				adaptadorContactos.registrarContacto((ContactoIndividual) c);
+			} else {
+				adaptadorGrupos.registrarGrupo((Grupo) c);
+			}
+		});
 	}
 
 	private List<ContactoIndividual> obtenerContactosDesdeCodigos(String codigos) {
@@ -188,10 +198,29 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 		return contactos;
 	}
 
-	private String obtenerCodigosContactoIndividual(List<ContactoIndividual> contactos) {
-		return contactos.stream().map(c -> String.valueOf(c.getCodigo())).reduce("", (l, c) -> l + c + " ") // concateno
-																											// todos los
-																											// codigos
+	private String obtenerCodigosContactoIndividual(List<Contacto> contactos) {
+		return contactos.stream().filter(c -> c instanceof ContactoIndividual) // me quedo con los contactos
+				// individuales
+				.map(c -> String.valueOf(c.getCodigo())).reduce("", (l, c) -> l + c + " ") // concateno todos los
+				// codigos
+				.trim();
+	}
+
+	private List<Grupo> obtenerGruposDesdeCodigos(String codigos) {
+		List<Grupo> grupos = new LinkedList<>();
+		StringTokenizer strTok = new StringTokenizer(codigos, " ");
+		AdaptadorGrupoTDS adaptadorG = AdaptadorGrupoTDS.getUnicaInstancia();
+		while (strTok.hasMoreTokens()) {
+			grupos.add(adaptadorG.recuperarGrupo(Integer.valueOf((String) strTok.nextElement())));
+		}
+		return grupos;
+	}
+
+	private String obtenerCodigosGrupo(List<Contacto> grupos) {
+		return grupos.stream().filter(c -> c instanceof Grupo) // me quedo con los contactos
+																// individuales
+				.map(c -> String.valueOf(c.getCodigo())).reduce("", (l, c) -> l + c + " ") // concateno todos los
+																							// codigos
 				.trim();
 	}
 }

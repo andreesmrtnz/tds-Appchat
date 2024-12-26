@@ -64,11 +64,11 @@ public class VentanaMain extends JFrame implements Observer {
 	
 	
 
-	private void loadChat(Optional<ContactoIndividual> contact, JPanel chatPanel) {
+	private void loadChat(Optional<Contacto> contact, JPanel chatPanel) {
 	    if (contact == null || chatPanel == null) {
 	        return; // Validación para evitar errores por parámetros nulos
 	    }
-	    ContactoIndividual contacto = contact.get();
+	    Contacto contacto = contact.get();
 
 	    // Limpiar el panel antes de agregar nuevos mensajes
 	    chatPanel.removeAll();
@@ -243,7 +243,7 @@ public class VentanaMain extends JFrame implements Observer {
 		        String contactoOTelefono = (String) comboBox.getSelectedItem();
 		        if (contactoOTelefono != null && !contactoOTelefono.trim().isEmpty()) {
 		            // Llamar al controlador para cargar el chat
-		            Optional<ContactoIndividual> contacto = controlador.getContacto(contactoOTelefono);
+		            Optional<Contacto> contacto = controlador.getContacto(contactoOTelefono);
 
 		            loadChat(contacto, chat);
 		            System.out.println("Chat cargado para: " + contactoOTelefono);

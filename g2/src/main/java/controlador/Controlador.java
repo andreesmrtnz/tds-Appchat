@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Grupo;
 import modelo.Mensaje;
 import modelo.RepositorioUsuarios;
 import modelo.Usuario;
@@ -65,7 +66,7 @@ public enum Controlador {
 			e.printStackTrace();
 		}
 		adaptadorUsuario = factoria.getUsuarioDAO();
-		// adaptadorGrupo = factoria.getGrupoDAO();
+		adaptadorGrupo = factoria.getGrupoDAO();
 		adaptadorContactoIndividual = factoria.getContactoIndividualDAO();
 		adaptadorMensaje = factoria.getMensajeDAO();
 	}
@@ -136,6 +137,76 @@ public enum Controlador {
 		}
 		return null;
 	}
+	
+	public Grupo crearGrupo(String nombre, List<ContactoIndividual> participantes) {
+		if (usuarioActual.hasGroup(nombre)) {
+			return null;
+		}
+
+		Group nuevoGrupo = new Group(nombre, new LinkedList<Message>(), participantes, usuarioActual);
+
+		// Se añade el grupo al usuario actual y al resto de participantes
+		usuarioActual.addGrupo(nuevoGrupo);
+		usuarioActual.addGrupoAdmin(nuevoGrupo);
+		participantes.stream().forEach(p -> p.addGrupo(nuevoGrupo));
+
+		// Conexion con persistencia
+		adaptadorGrupo.registrarGrupo(nuevoGrupo);
+
+		adaptadorUsuario.modificarUsuario(usuarioActual);
+
+		participantes.stream().forEach(p -> {
+			User usuario = p.getUsuario();
+			adaptadorUsuario.modificarUsuario(usuario);
+		});
+
+		return nuevoGrupo;
+	}
+	
+	public Group modificarGrupo(Group grupo, String nombre, List<IndividualContact> participantes) {
+		grupo.setNombre(nombre);
+
+		// Creo listas para las altas y las bajas
+		List<IndividualContact> nuevos = new LinkedList<>();
+		List<IndividualContact> mantenidos = new LinkedList<>();
+
+		for (IndividualContact contacto : participantes) {
+			if (grupo.hasParticipante(contacto.getUsuario())) {
+				mantenidos.add(contacto);
+			} else {
+				nuevos.add(contacto);
+			}
+		}
+
+		List<IndividualContact> eliminados = new LinkedList<>(grupo.getParticipantes());
+		eliminados.removeAll(participantes);
+
+		// Le modifico el grupo si el usuario ya existia. Si es nuevo, se lo añado
+		mantenidos.stream().forEach(p -> p.modificarGrupo(grupo));
+		nuevos.stream().forEach(p -> p.addGrupo(grupo));
+
+		// Elimino el grupo de los participantes que ya no lo tienen
+		eliminados.stream().forEach(p -> {
+			p.eliminarGrupo(grupo);
+			adaptadorUsuario.modificarUsuario(p.getUsuario());
+		});
+
+		// Se le cambia al grupo la lista de participantes
+		grupo.setIntegrantes(participantes);
+
+		// Conexion con persistencia
+		adaptadorGrupo.modificarGrupo(grupo);
+
+		// Actualiza los usuarios que no estaban antes en el grupo
+		nuevos.stream().map(IndividualContact::getUsuario).forEach(u -> adaptadorUsuario.modificarUsuario(u));
+
+		return grupo;
+	}
+	
+	public List<Group> getGruposAdminUsuarioActual() {
+		// Devuelvo una lista de mis grupos. Saco el código del usuario actual.
+		return usuarioActual.getGruposAdmin();
+	}
 
 	public List<Mensaje> getMensajes(Contacto contacto) {
 		// Si la conversacion es conmigo mismo es suficiente con mostrar mis mensajes
@@ -165,9 +236,9 @@ public enum Controlador {
 		return usuarioActual.getContactosNombre();
 	}
 
-	public List<ContactoIndividual> getContactosUsuarioActual() {
+	public List<Contacto> getContactosUsuarioActual() {
 		if (usuarioActual == null)
-			return new LinkedList<ContactoIndividual>();
+			return new LinkedList<Contacto>();
 		Usuario u = repoUsuarios.getUsuario(usuarioActual.getCodigo());
 		return u.getContactos();
 	}
@@ -176,7 +247,7 @@ public enum Controlador {
 		return usuarioActual;
 	}
 
-	public Optional<ContactoIndividual> getContacto(String nombre) {
+	public Optional<Contacto> getContacto(String nombre) {
 		return getContactosUsuarioActual().stream().filter(c -> c.getNombre().equals(nombre)).findAny();
 	}
 
@@ -199,9 +270,9 @@ public enum Controlador {
 		adaptadorMensaje.registrarMensaje(mensaje);
 		if (contacto instanceof ContactoIndividual) {
 			adaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
-		} //else {
-			//adaptadorGrupo.modificarGrupo((Grupo) contacto);
-		//}
+		} else {
+			adaptadorGrupo.modificarGrupo((Grupo) contacto);
+		}
 		System.out.println(usuarioActual.getContactos().stream().map(c->c.getMensajesEnviados()).collect(Collectors.toList()));
 		System.out.println("el usuario tiene ahora estos mensajes: " + adaptadorContactoIndividual.recuperarContacto(contacto.getCodigo()).getMensajesEnviados());
 		
