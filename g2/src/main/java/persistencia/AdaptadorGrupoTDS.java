@@ -38,17 +38,10 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 
 	@Override
 	public void registrarGrupo(Grupo group) {
-		Entidad eGroup = new Entidad();
-		boolean existe = true;
-
-		// Si la entidad está registrada no la registra de nuevo
-		try {
-			eGroup = servPersistencia.recuperarEntidad(group.getCodigo());
-		} catch (NullPointerException e) {
-			existe = false;
-		}
-		if (existe)
+		Entidad eGroup = servPersistencia.recuperarEntidad(group.getCodigo());
+		if (eGroup != null) {
 			return;
+		}
 
 		// Registramos primero los atributos que son objetos
 		// Registrar los mensajes del grupo
@@ -59,6 +52,8 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 
 		// Registramos a nuestro usuario administrador si no existe.
 		registrarSiNoExisteEmisor(group.getEmisor());
+		
+		eGroup = new Entidad();
 
 		// Atributos propios del grupo
 		eGroup.setNombre("grupo");
@@ -69,6 +64,8 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 
 		// Registrar entidad usuario
 		eGroup = servPersistencia.registrarEntidad(eGroup);
+		
+		System.out.println("emisor: "+ String.valueOf(group.getEmisor().getCodigo()));
 
 		// Identificador unico
 		group.setCodigo(eGroup.getId());
@@ -179,6 +176,9 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 	
 	private List<Mensaje> obtenerMensajesDesdeCodigos(String codigos) {
 		List<Mensaje> mensajes = new LinkedList<>();
+		if (codigos == null || codigos.isEmpty()) {
+            return mensajes; // Si es null o vacío, devolvemos una lista vacía
+        }
 		StringTokenizer strTok = new StringTokenizer(codigos, " ");
 		AdaptadorMensajeTDS adaptadorMensajes = AdaptadorMensajeTDS.getUnicaInstancia();
 		while (strTok.hasMoreTokens()) {
@@ -189,6 +189,9 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 	
 	private List<ContactoIndividual> obtenerIntegrantesDesdeCodigos(String codigos) {
 		List<ContactoIndividual> contactos = new LinkedList<>();
+		if (codigos == null || codigos.isEmpty()) {
+            return contactos; // Si es null o vacío, devolvemos una lista vacía
+        }
 		StringTokenizer strTok = new StringTokenizer(codigos, " ");
 		AdaptadorContactoIndividualTDS adaptadorC = AdaptadorContactoIndividualTDS.getUnicaInstancia();
 		while (strTok.hasMoreTokens()) {

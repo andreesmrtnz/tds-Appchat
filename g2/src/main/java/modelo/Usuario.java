@@ -3,6 +3,7 @@ package modelo;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,7 @@ public class Usuario {
 	private String imagen;
 	private String saludo;
 	private Descuento descuento;
-	private List<Grupo> gruposEmisor;
+	private List<Grupo> gruposEmisor = new LinkedList<>();
 	private List<Contacto> contactos = new ArrayList<>();
 
 	public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen,
