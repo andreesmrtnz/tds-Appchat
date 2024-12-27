@@ -16,6 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
+import modelo.Contacto;
+import modelo.ContactoIndividual;
+import modelo.Grupo;
 import modelo.Mensaje;
 
 public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mensaje> {
@@ -48,12 +51,18 @@ public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mens
     public Component getListCellRendererComponent(JList<? extends Mensaje> list, Mensaje mensaje, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
         // Configura el nombre del usuario y el texto del mensaje
-    	if (mensaje == null) {
-            userLabel.setText("Mensaje no disponible");
-            return this;
-        }
-        userLabel.setText("De: " + mensaje.getEmisor().getUsuario() + " a: " + mensaje.getReceptor().getNombre());
-        messageText.setText(mensaje.getTexto());
+    	if (mensaje.getReceptor() instanceof ContactoIndividual) {
+			userLabel.setText("De: " + mensaje.getEmisor().getUsuario() + " a: " + mensaje.getReceptor().getNombre());
+			messageText.setText(mensaje.getTexto());
+    	}
+    	else {
+    		Grupo grupo = (Grupo) mensaje.getReceptor();
+    		for (ContactoIndividual c : grupo.getParticipantes()) {
+    			userLabel.setText("De: " + mensaje.getEmisor().getUsuario() + " a: " + c.getNombre());
+    			messageText.setText(mensaje.getTexto());
+    		}
+    	}
+        
 
         // Carga una imagen de ejemplo con base en el emisor
         try {

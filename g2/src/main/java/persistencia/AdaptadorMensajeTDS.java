@@ -124,7 +124,7 @@ public class AdaptadorMensajeTDS implements IAdaptadorMensajeDAO {
 		int codigoContacto = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, "receptor"));
 		if (toGroup) {
 			AdaptadorGrupoTDS adaptadorG = AdaptadorGrupoTDS.getUnicaInstancia();
-			//receptor = adaptadorG.recuperarGrupo(codigoContacto);
+			receptor = adaptadorG.recuperarGrupo(codigoContacto);
 		} else {
 			AdaptadorContactoIndividualTDS adaptadorC = AdaptadorContactoIndividualTDS.getUnicaInstancia();
 			receptor = adaptadorC.recuperarContacto(codigoContacto);
@@ -149,13 +149,13 @@ public class AdaptadorMensajeTDS implements IAdaptadorMensajeDAO {
 
 	private void registrarListaSiNoExistenContactosoGrupos(List<Contacto> contactos) {
 		AdaptadorContactoIndividualTDS adaptadorContactos = AdaptadorContactoIndividualTDS.getUnicaInstancia();
-		//AdaptadorGrupoTDS adaptadorGrupos = AdaptadorGrupoTDS.getUnicaInstancia();
+		AdaptadorGrupoTDS adaptadorGrupos = AdaptadorGrupoTDS.getUnicaInstancia();
 		contactos.stream().forEach(c -> {
 			if (c instanceof ContactoIndividual) {
 				adaptadorContactos.registrarContacto((ContactoIndividual) c);
-			} //else {
-				//adaptadorGrupos.registrarGrupo((Group) c);
-			//}
+			} else {
+				adaptadorGrupos.registrarGrupo((Grupo) c);
+			}
 		});
 	}
 	

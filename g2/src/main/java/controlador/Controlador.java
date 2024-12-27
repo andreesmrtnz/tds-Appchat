@@ -159,6 +159,9 @@ public enum Controlador {
 			Usuario usuario = p.getUsuario();
 			adaptadorUsuario.modificarUsuario(usuario);
 		});
+		
+		contactos.add(nuevoGrupo);
+		notificarObservers();
 
 		return nuevoGrupo;
 	}
@@ -274,7 +277,7 @@ public enum Controlador {
 			adaptadorGrupo.modificarGrupo((Grupo) contacto);
 		}
 		System.out.println(usuarioActual.getContactos().stream().map(c->c.getMensajesEnviados()).collect(Collectors.toList()));
-		System.out.println("el usuario tiene ahora estos mensajes: " + adaptadorContactoIndividual.recuperarContacto(contacto.getCodigo()).getMensajesEnviados());
+
 		
 		
 	}

@@ -255,7 +255,10 @@ public class VentanaMain extends JFrame implements Observer {
 	}
 	private void cargarUltimasConersaciones(DefaultListModel<Mensaje> mensajeModel) {
 		for (Contacto c: controlador.getContactosUsuarioActual()) {
-			mensajeModel.addElement(controlador.getUltimoMensaje(c));
+			if (controlador.getUltimoMensaje(c)!= null) {
+				mensajeModel.addElement(controlador.getUltimoMensaje(c));
+			}
+			
 		}
 		
 	}
