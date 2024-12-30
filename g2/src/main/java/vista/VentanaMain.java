@@ -145,6 +145,12 @@ public class VentanaMain extends JFrame implements Observer {
 		
 
 		JButton searchButton = new JButton("");
+		searchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrame ventanaBuscar = new VentanaBuscar();
+				ventanaBuscar.setVisible(true);
+			}
+		});
 		searchButton.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/search-engine.png")));
 		panelSuperior.add(searchButton);
 

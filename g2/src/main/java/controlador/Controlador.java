@@ -281,6 +281,32 @@ public enum Controlador {
 		
 		
 	}
+	
+	public List<Mensaje> buscarMensajes(String contacto, String telefono, String text) {
+	    // Recupero los mensajes que he enviado
+	    List<Mensaje> mensajes = Controlador.INSTANCE.getContactosUsuarioActual().stream()
+	            .flatMap(c -> Controlador.INSTANCE.getMensajes(c).stream())
+	            .collect(Collectors.toList());
+
+	    Optional<Contacto> c = getContacto(contacto);
+	    ContactoIndividual contact = (ContactoIndividual) c.orElse(null);
+
+	    System.out.println("Buscando...");
+	    return mensajes.stream()
+	            // Filtro por contacto
+	            .filter(m -> contacto.equals("Todos") || 
+	                         m.getReceptor().equals(contact) || 
+	                         m.getEmisor().equals(contact.getUsuario()))
+	            // Filtro por teléfono
+	            .filter(m -> telefono.isEmpty() || 
+	                         m.getEmisor().getTelefono().equals(telefono) || 
+	                         (m.getReceptor() instanceof ContactoIndividual &&
+	                          ((ContactoIndividual) m.getReceptor()).getMovil().equals(telefono)))
+	            // Filtro por texto
+	            .filter(m -> text.isEmpty() || m.getTexto().contains(text))
+	            .collect(Collectors.toList());
+	}
+
 
 	public Contacto getChatActual() {
 		return chatActual;
