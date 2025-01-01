@@ -67,17 +67,19 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 		eUsuario.setNombre("usuario");
 
 		// Propiedades no objeto
-		eUsuario.setPropiedades(new ArrayList<>(Arrays.asList(new Propiedad("nombre", usuario.getUsuario()),
-				new Propiedad("fechanacimiento", dateFormat.format(usuario.getFechaNacimiento())),
-				new Propiedad("telefono", String.valueOf(usuario.getTelefono())),
-				new Propiedad("password", usuario.getContraseña()), new Propiedad("imagenes", usuario.getImagen()),
-				new Propiedad("saludo", usuario.getSaludo()),
-				new Propiedad("premium", String.valueOf(usuario.isPremium())),
-				new Propiedad("gruposemisor", obtenerCodigosGruposEmisor(usuario.getGruposEmisor())),
-				new Propiedad("grupos", obtenerCodigosGrupo(usuario.getContactos())),
-				new Propiedad("contactos", obtenerCodigosContactoIndividual(usuario.getContactos())) // Aquí gestionamos
-																										// los contactos
-		)));
+		eUsuario.setPropiedades(new ArrayList<>(Arrays.asList(
+			    new Propiedad("nombre", usuario.getUsuario()),
+			    new Propiedad("fechanacimiento", usuario.getFechaNacimiento() != null ? dateFormat.format(usuario.getFechaNacimiento()) : ""),
+			    new Propiedad("telefono", String.valueOf(usuario.getTelefono())),
+			    new Propiedad("password", usuario.getContraseña()),
+			    new Propiedad("imagenes", usuario.getImagen()),
+			    new Propiedad("saludo", usuario.getSaludo() != null ? usuario.getSaludo() : ""),
+			    new Propiedad("premium", String.valueOf(usuario.isPremium())),
+			    new Propiedad("gruposemisor", obtenerCodigosGruposEmisor(usuario.getGruposEmisor())),
+			    new Propiedad("grupos", obtenerCodigosGrupo(usuario.getContactos())),
+			    new Propiedad("contactos", obtenerCodigosContactoIndividual(usuario.getContactos()))
+			)));
+
 
 		// Registrar la entidad usuario en el servicio de persistencia
 		eUsuario = servPersistencia.registrarEntidad(eUsuario);
@@ -102,20 +104,22 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 		// Recuperar las propiedades de la entidad
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, "nombre");
 
+		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, "saludo");
+		saludo = (saludo != null && !saludo.isEmpty()) ? saludo : null;
+
 		Date fechaNacimiento = null;
 		try {
-			String fechaTexto = servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechanacimiento");
-			if (fechaTexto != null && !fechaTexto.isEmpty()) {
-				fechaNacimiento = dateFormat.parse(fechaTexto);
-			}
+		    String fechaTexto = servPersistencia.recuperarPropiedadEntidad(eUsuario, "fechanacimiento");
+		    if (fechaTexto != null && !fechaTexto.isEmpty()) {
+		        fechaNacimiento = dateFormat.parse(fechaTexto);
+		    }
 		} catch (ParseException e) {
-			System.err.println("Error al parsear la fecha de nacimiento para el usuario con código: " + codigo);
-			fechaNacimiento = new Date(); // Fecha por defecto si hay error
+		    System.err.println("Error al parsear la fecha de nacimiento para el usuario con código: " + codigo);
 		}
+
 
 		String telefono = servPersistencia.recuperarPropiedadEntidad(eUsuario, "telefono");
 		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, "password");
-		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, "saludo");
 		String pathImages = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagenes");
 		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "premium"));
 
@@ -159,16 +163,16 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 				prop.setValor(user.getUsuario());
 				break;
 			case "fechanacimiento":
-				prop.setValor(user.getFechaNacimiento() != null ? dateFormat.format(user.getFechaNacimiento()) : "");
-				break;
+			    prop.setValor(user.getFechaNacimiento() != null ? dateFormat.format(user.getFechaNacimiento()) : "");
+			    break;
+			case "saludo":
+			    prop.setValor(user.getSaludo() != null ? user.getSaludo() : "");
+			    break;
 			case "telefono":
 				prop.setValor(user.getTelefono());
 				break;
 			case "password":
 				prop.setValor(user.getContraseña());
-				break;
-			case "saludo":
-				prop.setValor(user.getSaludo());
 				break;
 			case "imagenes":
 				prop.setValor(user.getImagen());

@@ -273,13 +273,38 @@ public class VentanaMain extends JFrame implements Observer {
 		enviarBarraButton.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
-		        
-		    	// Obtener el texto del JComboBox
 		        String contactoOTelefono = (String) comboBox.getSelectedItem();
 		        if (contactoOTelefono != null && !contactoOTelefono.trim().isEmpty()) {
-		            // Llamar al controlador para cargar el chat
 		            Optional<Contacto> contacto = controlador.getContacto(contactoOTelefono);
 
+		            // Si el contacto no existe, crear un contacto temporal
+		            if (contacto.isEmpty()) {
+		                int respuesta = JOptionPane.showConfirmDialog(
+		                        VentanaMain.this,
+		                        "El número " + contactoOTelefono + " no está en tus contactos. ¿Quieres iniciar una conversación?",
+		                        "Nuevo Contacto",
+		                        JOptionPane.YES_NO_OPTION
+		                );
+
+		                if (respuesta == JOptionPane.YES_OPTION) {
+		                    ContactoIndividual nuevoContacto = controlador.doAgregar(contactoOTelefono, contactoOTelefono);
+		                    if (nuevoContacto != null) {
+		                        contacto = Optional.of(nuevoContacto);
+		                    } else {
+		                        JOptionPane.showMessageDialog(
+		                                VentanaMain.this,
+		                                "No se pudo crear el contacto.",
+		                                "Error",
+		                                JOptionPane.ERROR_MESSAGE
+		                        );
+		                        return;
+		                    }
+		                } else {
+		                    return; // Cancelar si el usuario no quiere iniciar la conversación
+		                }
+		            }
+
+		            // Cargar el chat en el panel derecho
 		            loadChat(contacto, chat);
 		            System.out.println("Chat cargado para: " + contactoOTelefono);
 		        } else {
@@ -287,6 +312,7 @@ public class VentanaMain extends JFrame implements Observer {
 		        }
 		    }
 		});
+
 	}
 	private void cargarUltimasConersaciones(DefaultListModel<Mensaje> mensajeModel) {
 		for (Contacto c: controlador.getContactosUsuarioActual()) {

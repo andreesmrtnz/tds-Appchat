@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.swing.JOptionPane;
+
 import com.itextpdf.text.DocumentException;
 
 import modelo.Contacto;
@@ -124,24 +126,55 @@ public enum Controlador {
 	}
 
 	public ContactoIndividual doAgregar(String nombre, String telefono) {
-		if (!usuarioActual.tieneContacto(nombre)) {
-			Optional<Usuario> usuarioOpt = repoUsuarios.getUsuarioPorTelefono(telefono);
+	    // Buscar si ya existe un contacto con este número
+	    Optional<ContactoIndividual> contactoExistente = usuarioActual.getContactos().stream()
+	            .filter(c -> c instanceof ContactoIndividual)
+	            .map(c -> (ContactoIndividual) c)
+	            .filter(c -> c.getMovil().equals(telefono))
+	            .findFirst();
 
-			if (usuarioOpt.isPresent()) {
-				ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, usuarioOpt.get(), telefono);
-				usuarioActual.addContacto(nuevoContacto);
+	    if (contactoExistente.isPresent()) {
+	        ContactoIndividual contacto = contactoExistente.get();
 
-				adaptadorContactoIndividual.registrarContacto(nuevoContacto);
+	        // Preguntar al usuario si desea sobrescribir el contacto
+	        int respuesta = JOptionPane.showConfirmDialog(
+	                null,
+	                "El número " + telefono + " ya está registrado como " + contacto.getNombre() +
+	                        ". ¿Deseas actualizar el nombre a " + nombre + "?",
+	                "Sobrescribir Contacto",
+	                JOptionPane.YES_NO_OPTION
+	        );
 
-				adaptadorUsuario.modificarUsuario(usuarioActual);
+	        if (respuesta == JOptionPane.YES_OPTION) {
+	            // Actualizar el nombre del contacto existente
+	            contacto.setNombre(nombre);
+	            adaptadorContactoIndividual.modificarContacto(contacto);
+	            adaptadorUsuario.modificarUsuario(usuarioActual);
+	            notificarObservers();
+	            return contacto; // Devuelve el contacto actualizado
+	        } else {
+	            return null; // El usuario decidió no sobrescribir
+	        }
+	    }
 
-				contactos.add(nuevoContacto);
-				notificarObservers();
-				return nuevoContacto;
-			}
-		}
-		return null;
+	    // Si no existe, agregar un nuevo contacto
+	    Optional<Usuario> usuarioOpt = repoUsuarios.getUsuarioPorTelefono(telefono);
+
+	    if (usuarioOpt.isPresent()) {
+	        ContactoIndividual nuevoContacto = new ContactoIndividual(nombre, usuarioOpt.get(), telefono);
+	        usuarioActual.addContacto(nuevoContacto);
+
+	        adaptadorContactoIndividual.registrarContacto(nuevoContacto);
+	        adaptadorUsuario.modificarUsuario(usuarioActual);
+
+	        contactos.add(nuevoContacto);
+	        notificarObservers();
+	        return nuevoContacto; // Devuelve el nuevo contacto
+	    }
+
+	    return null; // No se pudo agregar el contacto
 	}
+
 	
 	public Grupo crearGrupo(String nombre, List<ContactoIndividual> participantes) {
 		if (usuarioActual.hasGroup(nombre)) {

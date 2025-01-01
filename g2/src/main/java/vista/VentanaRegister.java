@@ -316,7 +316,7 @@ public class VentanaRegister extends JFrame {
 	    String confirmPassword = passwordField_1.getText().trim();
 
 	    // Validar campos obligatorios
-	    if (nombre.isEmpty() || apellidos.isEmpty() || telefono.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+	    if (nombre.isEmpty() || apellidos.isEmpty() || telefono.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() ) {
 	        mostrarError("Todos los campos obligatorios deben completarse (excepto fecha de nacimiento e imagen).");
 	        return false;
 	    }
