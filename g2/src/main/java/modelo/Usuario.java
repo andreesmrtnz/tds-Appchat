@@ -142,6 +142,42 @@ public class Usuario {
 		return contactos.stream().anyMatch(c -> c instanceof ContactoIndividual && c.getNombre().equals(nomContacto));
 	}
 
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
+	public void setContraseña(String contraseña) {
+		this.contraseña = contraseña;
+	}
+
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+	public void setFechaNacimiento(Date fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
+	}
+
+	public void setImagen(String imagen) {
+		this.imagen = imagen;
+	}
+
+	public void setSaludo(String saludo) {
+		this.saludo = saludo;
+	}
+
+	public void setDescuento(Descuento descuento) {
+		this.descuento = descuento;
+	}
+
+	public void setGruposEmisor(List<Grupo> gruposEmisor) {
+		this.gruposEmisor = gruposEmisor;
+	}
+
+	public void setContactos(List<Contacto> contactos) {
+		this.contactos = contactos;
+	}
+
 	@Override
 	public String toString() {
 		return "User [codigo=" + codigo + ", nombre=" + usuario + ", fechaNacimiento="

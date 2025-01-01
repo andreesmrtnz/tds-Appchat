@@ -393,4 +393,12 @@ public enum Controlador {
 		return usuarioActual.isPremium();
 	}
 
+	public void cambiarImagenUsuario(String urlText) {
+		usuarioActual.setImagen(urlText);
+		adaptadorUsuario.modificarUsuario(usuarioActual);
+		
+	}
+
+	
+
 }

@@ -24,6 +24,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import controlador.Controlador;
@@ -37,6 +38,8 @@ import java.awt.Image;
 
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 
 public class VentanaMain extends JFrame implements Observer {
@@ -203,6 +206,17 @@ public class VentanaMain extends JFrame implements Observer {
 
 		JLabel imagenPerfilLabel = new JLabel(controlador.getUsuarioActual().getUsuario());
 		cargarImagenPerfilURL(imagenPerfilLabel, controlador.getUsuarioActual().getImagen());
+		imagenPerfilLabel.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent evt) {
+		        // Aquí pones lo que quieres que pase cuando se haga clic en el JLabel
+		        System.out.println("¡Has hecho clic en el perfil!");
+		        
+		        // Por ejemplo, abrir una ventana de configuración de usuario
+		        JFrame ventanaPerfil = new VentanaPerfil();
+		        ventanaPerfil.setVisible(true);
+		    }
+		});
 		panelSuperior.add(imagenPerfilLabel);
 
 		JPanel conversaciones = new JPanel();
@@ -224,21 +238,27 @@ public class VentanaMain extends JFrame implements Observer {
 		list = new JList<>(mensajeModel); // JList ahora usa el modelo de Mensaje
 		list.setCellRenderer(new MensajeCellRenderer()); // Configurar el renderizador personalizado
 		conversaciones.add(list, BorderLayout.CENTER);
+		
 
 		JScrollBar scrollBar = new JScrollBar();
 		conversaciones.add(scrollBar, BorderLayout.EAST);
 
 		JPanel chat = new JPanel();
 		chat.setBackground(new Color(202, 253, 202));
+		chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
+		chat.setSize(400, 700);
+
+		// Crear un JScrollPane que envuelva el panel 'chat'
+		JScrollPane scrollPane = new JScrollPane(chat);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Siempre mostrar la barra de desplazamiento vertical
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // No mostrar barra de desplazamiento horizontal
 		GridBagConstraints gbc_chat = new GridBagConstraints();
 		gbc_chat.gridwidth = 2;
 		gbc_chat.insets = new Insets(0, 0, 5, 5);
 		gbc_chat.fill = GridBagConstraints.BOTH;
 		gbc_chat.gridx = 3;
 		gbc_chat.gridy = 1;
-		contentPane.add(chat, gbc_chat);
-		chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
-		chat.setSize(400, 700);
+		contentPane.add(scrollPane, gbc_chat);
 
 		
 
@@ -312,6 +332,7 @@ public class VentanaMain extends JFrame implements Observer {
 		        }
 		    }
 		});
+		
 
 	}
 	private void cargarUltimasConersaciones(DefaultListModel<Mensaje> mensajeModel) {
