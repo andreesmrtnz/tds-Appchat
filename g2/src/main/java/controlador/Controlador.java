@@ -1,5 +1,7 @@
 package controlador;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,8 +12,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.itextpdf.text.DocumentException;
+
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.GeneradorPDF;
 import modelo.Grupo;
 import modelo.Mensaje;
 import modelo.RepositorioUsuarios;
@@ -314,6 +319,45 @@ public enum Controlador {
 
 	public void setChatActual(Contacto chatActual) {
 		this.chatActual = chatActual;
+	}
+
+	public boolean activarPremium() {
+		if (! usuarioActual.isPremium()) {
+			usuarioActual.setPremium(true);
+			adaptadorUsuario.modificarUsuario(usuarioActual);
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	public void crearPDFconversacion(Contacto contacto, String ruta, File archivo) {
+	    GeneradorPDF generador = new GeneradorPDF();
+
+	    // Obtener los mensajes ordenados
+	    List<Mensaje> mensajes = getMensajes(contacto);
+
+	    // Convertir los mensajes a un formato adecuado para el PDF
+	    List<String[]> mensajesFormateados = mensajes.stream()
+	            .map(m -> new String[]{
+	                    m.getHora().toString(),
+	                    m.getTexto(),
+	                    m.getEmisor().getUsuario()
+	            })
+	            .collect(Collectors.toList());
+
+	    try {
+	        // Generar el PDF
+	        generador.generarPDF(contacto.getNombre(), mensajesFormateados, ruta);
+	    } catch (IOException | DocumentException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
+	public boolean puedeExportarPDF() {
+		
+		return usuarioActual.isPremium();
 	}
 
 }

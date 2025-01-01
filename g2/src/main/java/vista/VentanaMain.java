@@ -21,6 +21,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.border.EmptyBorder;
@@ -168,9 +169,37 @@ public class VentanaMain extends JFrame implements Observer {
 		horizontalGlue.setMinimumSize(new Dimension(150, 0));
 		panelSuperior.add(horizontalGlue);
 
-		JButton btnNewButton_4 = new JButton("Premium");
-		btnNewButton_4.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/premium.png")));
-		panelSuperior.add(btnNewButton_4);
+		JButton btnPremium = new JButton("Premium");
+		btnPremium.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        if (controlador.activarPremium()) {
+		            // Muestra un panel de información indicando que ahora es usuario premium
+		            JOptionPane.showMessageDialog(null, "Ahora eres usuario premium.", "Premium Activado", JOptionPane.INFORMATION_MESSAGE);
+		        } else {
+		            // Muestra un panel de error indicando que ya es usuario premium
+		            JOptionPane.showMessageDialog(null, "Ya eres un usuario premium.", "Error", JOptionPane.ERROR_MESSAGE);
+		        }
+		    }
+		});
+		
+		JButton btnPdf = new JButton("Pdf");
+		btnPdf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (controlador.puedeExportarPDF()) {
+					JFrame ventanaPDF = new VentanaExportarPDF();
+					ventanaPDF.setVisible(true);
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "No tienes disponible esta funcionalidad, hazte PREMIUM.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				
+			}
+		});
+		btnPdf.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/pdf.png")));
+		panelSuperior.add(btnPdf);
+
+		btnPremium.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/premium.png")));
+		panelSuperior.add(btnPremium);
 
 		JLabel imagenPerfilLabel = new JLabel(controlador.getUsuarioActual().getUsuario());
 		cargarImagenPerfilURL(imagenPerfilLabel, controlador.getUsuarioActual().getImagen());

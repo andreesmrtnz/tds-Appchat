@@ -72,6 +72,7 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 				new Propiedad("telefono", String.valueOf(usuario.getTelefono())),
 				new Propiedad("password", usuario.getContraseña()), new Propiedad("imagenes", usuario.getImagen()),
 				new Propiedad("saludo", usuario.getSaludo()),
+				new Propiedad("premium", String.valueOf(usuario.isPremium())),
 				new Propiedad("gruposemisor", obtenerCodigosGruposEmisor(usuario.getGruposEmisor())),
 				new Propiedad("grupos", obtenerCodigosGrupo(usuario.getContactos())),
 				new Propiedad("contactos", obtenerCodigosContactoIndividual(usuario.getContactos())) // Aquí gestionamos
@@ -116,10 +117,12 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, "password");
 		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, "saludo");
 		String pathImages = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagenes");
+		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "premium"));
 
 		// Crear objeto Usuario
 		Usuario usuario = new Usuario(nombre, password, telefono, fechaNacimiento, pathImages, saludo);
 		usuario.setCodigo(codigo);
+		usuario.setPremium(premium);
 
 		// Añadir al pool
 		PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
@@ -169,6 +172,9 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 				break;
 			case "imagenes":
 				prop.setValor(user.getImagen());
+				break;
+			case "premium":
+				prop.setValor(String.valueOf(user.isPremium()));
 				break;
 			case "contactos":
 				prop.setValor(obtenerCodigosContactoIndividual(user.getContactos()));

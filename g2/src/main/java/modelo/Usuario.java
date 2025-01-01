@@ -15,6 +15,7 @@ public class Usuario {
 	private Date fechaNacimiento;
 	private String imagen;
 	private String saludo;
+	private boolean premium = false;
 	private Descuento descuento;
 	private List<Grupo> gruposEmisor = new LinkedList<>();
 	private List<Contacto> contactos = new ArrayList<>();
@@ -169,4 +170,12 @@ public class Usuario {
 		return usuario.equals(other.usuario) || telefono == other.telefono;
 	}
 	// Getters y Setters
+
+	public boolean isPremium() {
+		return premium;
+	}
+
+	public void setPremium(boolean premium) {
+		this.premium = premium;
+	}
 }
