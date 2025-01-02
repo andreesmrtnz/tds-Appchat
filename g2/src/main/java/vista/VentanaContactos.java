@@ -18,11 +18,12 @@ import javax.swing.JScrollPane;
 import controlador.Controlador;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Grupo;
 
-import java.awt.event.ActionListener;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.JOptionPane;
 
 public class VentanaContactos extends JFrame {
 
@@ -30,13 +31,14 @@ public class VentanaContactos extends JFrame {
     private JList<String> listaGrupo;
     private JButton btnAgregarContacto;
     private JButton btnAgregarGrupo;
+    private JButton btnModificarGrupo;
     private JButton btnMoverDerecha;
     private JButton btnMoverIzquierda;
     private Controlador controlador;
     private JTextField textField;
 
     public VentanaContactos() {
-    	controlador = Controlador.INSTANCE;
+        controlador = Controlador.INSTANCE;
         setTitle("Gestión de Grupos");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setSize(849, 456);
@@ -99,62 +101,31 @@ public class VentanaContactos extends JFrame {
         gbc_scrollGrupo.gridy = 3;
         contentPane.add(scrollGrupo, gbc_scrollGrupo);
 
-        // Botón Añadir Contacto
-        btnAgregarContacto = new JButton("Añadir Contacto");
-        btnAgregarContacto.addActionListener(e -> {
-            JFrame agregarContacto = new AlertaAgregarContacto();
-            agregarContacto.setVisible(true);
-            setVisible(false);
-        });
-        GridBagConstraints gbc_btnAgregarContacto = new GridBagConstraints();
-        gbc_btnAgregarContacto.gridheight = 2;
-        gbc_btnAgregarContacto.fill = GridBagConstraints.HORIZONTAL;
-        gbc_btnAgregarContacto.insets = new Insets(0, 0, 5, 5);
-        gbc_btnAgregarContacto.gridx = 1;
-        gbc_btnAgregarContacto.gridy = 4;
-        contentPane.add(btnAgregarContacto, gbc_btnAgregarContacto);
-
         // Botón Añadir Grupo
         btnAgregarGrupo = new JButton("Añadir Grupo");
         btnAgregarGrupo.addActionListener(e -> {
             String nombreGrupo = textField.getText().trim();
             if (nombreGrupo.isEmpty()) {
-                // Validar si el nombre del grupo está vacío
-                System.out.println("El nombre del grupo no puede estar vacío.");
+                JOptionPane.showMessageDialog(this, "El nombre del grupo no puede estar vacío.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             List<ContactoIndividual> participantes = new ArrayList<>();
             for (int i = 0; i < modeloGrupo.size(); i++) {
-            	Optional<Contacto> c = controlador.getContacto(modeloGrupo.get(i));
-            	if (c!= null && c.get() instanceof ContactoIndividual) {
-					ContactoIndividual contacto = (ContactoIndividual) c.get();
-					participantes.add(contacto);
-            	}
-            	
+                Optional<Contacto> c = controlador.getContacto(modeloGrupo.get(i));
+                if (c.isPresent() && c.get() instanceof ContactoIndividual) {
+                    ContactoIndividual contacto = (ContactoIndividual) c.get();
+                    participantes.add(contacto);
+                }
             }
             if (participantes.isEmpty()) {
-                System.out.println("El grupo debe tener al menos un contacto.");
+                JOptionPane.showMessageDialog(this, "El grupo debe tener al menos un contacto.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             controlador.crearGrupo(nombreGrupo, participantes);
             modeloGrupo.clear();
             textField.setText("");
+            JOptionPane.showMessageDialog(this, "Grupo creado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         });
-        
-                // Botón para mover a la derecha
-                btnMoverDerecha = new JButton(">>");
-                btnMoverDerecha.addActionListener(e -> {
-                    String selectedContact = listaContactos.getSelectedValue();
-                    if (selectedContact != null) {
-                        modeloContactos.removeElement(selectedContact);
-                        modeloGrupo.addElement(selectedContact);
-                    }
-                });
-                GridBagConstraints gbc_btnMoverDerecha = new GridBagConstraints();
-                gbc_btnMoverDerecha.insets = new Insets(0, 0, 5, 5);
-                gbc_btnMoverDerecha.gridx = 2;
-                gbc_btnMoverDerecha.gridy = 4;
-                contentPane.add(btnMoverDerecha, gbc_btnMoverDerecha);
         GridBagConstraints gbc_btnAgregarGrupo = new GridBagConstraints();
         gbc_btnAgregarGrupo.fill = GridBagConstraints.HORIZONTAL;
         gbc_btnAgregarGrupo.gridheight = 2;
@@ -162,7 +133,57 @@ public class VentanaContactos extends JFrame {
         gbc_btnAgregarGrupo.gridx = 3;
         gbc_btnAgregarGrupo.gridy = 4;
         contentPane.add(btnAgregarGrupo, gbc_btnAgregarGrupo);
-        
+
+        // Botón para modificar grupo
+        btnModificarGrupo = new JButton("Modificar Grupo");
+        btnModificarGrupo.addActionListener(e -> {
+            String nombreGrupo = textField.getText().trim();
+            if (nombreGrupo.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debe seleccionar un grupo existente para modificar.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Optional<Contacto> g = controlador.getContacto(nombreGrupo);
+            if (g.isEmpty() || !(g.get() instanceof Grupo)) {
+                JOptionPane.showMessageDialog(this, "El contacto seleccionado no es un grupo.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Grupo grupo = (Grupo) g.get();
+            List<ContactoIndividual> participantes = new ArrayList<>();
+            for (int i = 0; i < modeloGrupo.size(); i++) {
+                Optional<Contacto> c = controlador.getContacto(modeloGrupo.get(i));
+                if (c.isPresent() && c.get() instanceof ContactoIndividual) {
+                    ContactoIndividual contacto = (ContactoIndividual) c.get();
+                    participantes.add(contacto);
+                }
+            }
+            controlador.modificarGrupo(grupo, nombreGrupo, participantes);
+            modeloGrupo.clear();
+            textField.setText("");
+            JOptionPane.showMessageDialog(this, "Grupo modificado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        });
+        GridBagConstraints gbc_btnModificarGrupo = new GridBagConstraints();
+        gbc_btnModificarGrupo.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btnModificarGrupo.insets = new Insets(0, 0, 5, 5);
+        gbc_btnModificarGrupo.gridx = 4;
+        gbc_btnModificarGrupo.gridy = 4;
+        contentPane.add(btnModificarGrupo, gbc_btnModificarGrupo);
+
+        // Botón para mover a la derecha
+        btnMoverDerecha = new JButton(">>");
+        btnMoverDerecha.addActionListener(e -> {
+            String selectedContact = listaContactos.getSelectedValue();
+            if (selectedContact != null) {
+                modeloContactos.removeElement(selectedContact);
+                modeloGrupo.addElement(selectedContact);
+            }
+        });
+        GridBagConstraints gbc_btnMoverDerecha = new GridBagConstraints();
+        gbc_btnMoverDerecha.insets = new Insets(0, 0, 5, 5);
+        gbc_btnMoverDerecha.gridx = 2;
+        gbc_btnMoverDerecha.gridy = 4;
+        contentPane.add(btnMoverDerecha, gbc_btnMoverDerecha);
+
         // Botón para mover a la izquierda
         btnMoverIzquierda = new JButton("<<");
         btnMoverIzquierda.addActionListener(e -> {
