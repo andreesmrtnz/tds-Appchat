@@ -324,6 +324,7 @@ public enum Controlador {
 	    // Recupero los mensajes que he enviado
 	    List<Mensaje> mensajes = Controlador.INSTANCE.getContactosUsuarioActual().stream()
 	            .flatMap(c -> Controlador.INSTANCE.getMensajes(c).stream())
+	            .distinct()
 	            .collect(Collectors.toList());
 
 	    Optional<Contacto> c = getContacto(contacto);
@@ -342,6 +343,7 @@ public enum Controlador {
 	                          ((ContactoIndividual) m.getReceptor()).getMovil().equals(telefono)))
 	            // Filtro por texto
 	            .filter(m -> text.isEmpty() || m.getTexto().contains(text))
+	            .distinct()
 	            .collect(Collectors.toList());
 	}
 
@@ -398,6 +400,21 @@ public enum Controlador {
 		adaptadorUsuario.modificarUsuario(usuarioActual);
 		
 	}
+
+	public Optional<Contacto> mensajeCon(Mensaje mensajeSeleccionado) {
+	    // Obtener el usuario actual
+
+	    // Determinar si el emisor o receptor es diferente del usuario actual
+	    if (!mensajeSeleccionado.getEmisor().equals(usuarioActual)) {
+	        return getContacto(mensajeSeleccionado.getEmisor().getUsuario());
+	    } else if (!mensajeSeleccionado.getReceptor().equals(usuarioActual)) {
+	        return Optional.of(mensajeSeleccionado.getReceptor());
+	    }
+
+	    // Si tanto el emisor como el receptor son el usuario actual, no hay contacto válido
+	    return Optional.empty();
+	}
+
 
 	
 

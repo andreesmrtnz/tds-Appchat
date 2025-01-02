@@ -87,7 +87,7 @@ public class VentanaMain extends JFrame implements Observer {
 
 			if (m.getEmisor().equals(controlador.getUsuarioActual())) {
 				colorBurbuja = Color.GREEN;
-				emisor = "You";
+				emisor = "Tú";
 				direccionMensaje = BubbleText.SENT;
 			} else {
 				colorBurbuja = Color.YELLOW;
@@ -288,6 +288,18 @@ public class VentanaMain extends JFrame implements Observer {
 		gbc_btnSend.gridy = 2;
 		contentPane.add(btnSend, gbc_btnSend);
 		btnSend.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/enviar-button.png")));
+		
+		// Agregar un ListSelectionListener al JList
+		list.addListSelectionListener(e -> {
+		    if (!e.getValueIsAdjusting()) { // Evitar múltiples eventos al cambiar la selección
+		        Mensaje mensajeSeleccionado = list.getSelectedValue();
+		        
+		        if (mensajeSeleccionado != null) {
+		            Optional<Contacto> contacto = controlador.mensajeCon(mensajeSeleccionado);
+		            contacto.ifPresent(c -> loadChat(Optional.of(c), chat));
+		        }
+		    }
+		});
 		
 		
 		enviarBarraButton.addActionListener(new ActionListener() {
