@@ -305,20 +305,48 @@ public enum Controlador {
 	}
 
 	public void enviarMensaje(Contacto contacto, String text) {
-		Mensaje mensaje = new Mensaje(text, LocalDateTime.now(), usuarioActual, contacto);
-		contacto.enviarMensaje(mensaje);
+	    // Crear el mensaje con los detalles proporcionados
+	    Mensaje mensaje = new Mensaje(text, LocalDateTime.now(), usuarioActual, contacto);
 
-		adaptadorMensaje.registrarMensaje(mensaje);
-		if (contacto instanceof ContactoIndividual) {
-			adaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
-		} else {
-			adaptadorGrupo.modificarGrupo((Grupo) contacto);
-		}
-		System.out.println(usuarioActual.getContactos().stream().map(c->c.getMensajesEnviados()).collect(Collectors.toList()));
+	    // Si nunca he hablado con el contacto, es individual, y el receptor no tiene agregado al usuario actual
+	    if (getUltimoMensaje(contacto) == null && contacto instanceof ContactoIndividual) {
+	        ContactoIndividual c = (ContactoIndividual) contacto;
+	        Usuario receptor = c.getUsuario();
 
-		
-		
+	        // Comprobar si el receptor tiene al usuario actual en su lista de contactos
+	        boolean usuarioActualNoAgregado = receptor.getContactos().stream()
+	            .noneMatch(contactoExistente -> 
+	                contactoExistente instanceof ContactoIndividual &&
+	                ((ContactoIndividual) contactoExistente).getUsuario().equals(usuarioActual)
+	            );
+
+	        if (usuarioActualNoAgregado) {
+	        	System.out.println("lo agregamos");
+	            // Crear un nuevo contacto para el receptor con el nombre igual al número de teléfono del usuario actual
+	            ContactoIndividual nuevoContacto = new ContactoIndividual(usuarioActual.getTelefono(), usuarioActual, usuarioActual.getTelefono());
+	            receptor.addContacto(nuevoContacto);
+	            // Registrar el nuevo contacto en el adaptador
+	            adaptadorContactoIndividual.registrarContacto(nuevoContacto);
+	            adaptadorUsuario.modificarUsuario(receptor);
+	            
+	        }
+	    }
+
+	    // Enviar el mensaje al contacto
+	    contacto.enviarMensaje(mensaje);
+
+	    // Registrar el mensaje en el adaptador de mensajes
+	    adaptadorMensaje.registrarMensaje(mensaje);
+
+	    // Actualizar la información del contacto o grupo en sus respectivos adaptadores
+	    if (contacto instanceof ContactoIndividual) {
+	        adaptadorContactoIndividual.modificarContacto((ContactoIndividual) contacto);
+	    } else {
+	        adaptadorGrupo.modificarGrupo((Grupo) contacto);
+	    }
 	}
+
+
 	
 	public List<Mensaje> buscarMensajes(String contacto, String telefono, String text) {
 	    // Recupero los mensajes que he enviado

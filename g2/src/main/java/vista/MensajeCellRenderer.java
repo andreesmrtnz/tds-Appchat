@@ -46,6 +46,15 @@ public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mens
             ventanaAdd.setVisible(true);
         });
 
+        // Evitar que el clic en el botón seleccione la celda
+        addButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                e.consume(); // Consume el evento para que no se propague al JList
+            }
+        });
+
+
 
         // Agrega la imagen a la izquierda
         add(imageLabel, BorderLayout.WEST);
@@ -64,6 +73,13 @@ public class MensajeCellRenderer extends JPanel implements ListCellRenderer<Mens
         // Agregar el botón "+" a la derecha
         add(addButton, BorderLayout.EAST);
     }
+    
+    public boolean isAddButtonClicked(Point point) {
+        // Obtener las coordenadas relativas del botón "+"
+        Rectangle buttonBounds = addButton.getBounds();
+        return buttonBounds.contains(point);
+    }
+
 
 
     public Component getListCellRendererComponent(JList<? extends Mensaje> list, Mensaje mensaje, int index,

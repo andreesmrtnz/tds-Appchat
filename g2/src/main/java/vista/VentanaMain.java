@@ -7,6 +7,8 @@ import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +39,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -289,18 +293,35 @@ public class VentanaMain extends JFrame implements Observer {
 		contentPane.add(btnSend, gbc_btnSend);
 		btnSend.setIcon(new ImageIcon(VentanaMain.class.getResource("/imagen/enviar-button.png")));
 		
-		// Agregar un ListSelectionListener al JList
-		list.addListSelectionListener(e -> {
-		    if (!e.getValueIsAdjusting()) { // Evitar múltiples eventos al cambiar la selección
-		        Mensaje mensajeSeleccionado = list.getSelectedValue();
-		        
-		        if (mensajeSeleccionado != null) {
-		            Optional<Contacto> contacto = controlador.mensajeCon(mensajeSeleccionado);
-		            contacto.ifPresent(c -> loadChat(Optional.of(c), chat));
+		// Agregar un MouseListener al JList
+		list.addMouseListener(new java.awt.event.MouseAdapter() {
+		    @Override
+		    public void mouseClicked(java.awt.event.MouseEvent e) {
+		        int index = list.locationToIndex(e.getPoint());
+		        if (index != -1) {
+		            Rectangle cellBounds = list.getCellBounds(index, index);
+		            if (cellBounds != null && cellBounds.contains(e.getPoint())) {
+		                Mensaje mensaje = list.getModel().getElementAt(index);
+		                
+		                // Obtener el renderer para esa celda
+		                MensajeCellRenderer renderer = (MensajeCellRenderer) list.getCellRenderer();
+		                Point relativePoint = new Point(e.getX() - cellBounds.x, e.getY() - cellBounds.y);
+		                
+		                if (renderer.isAddButtonClicked(relativePoint)) {
+		                    // Acción del botón "+"
+		                    JFrame ventanaAdd = new AlertaAgregarContacto();
+		                    ventanaAdd.setVisible(true);
+		                } else {
+		                    // Acción normal de selección de mensaje
+		                    Optional<Contacto> contacto = controlador.mensajeCon(mensaje);
+		                    contacto.ifPresent(c -> loadChat(Optional.of(c), chat));
+		                }
+		            }
 		        }
 		    }
 		});
-		
+
+
 		
 		enviarBarraButton.addActionListener(new ActionListener() {
 		    @Override
