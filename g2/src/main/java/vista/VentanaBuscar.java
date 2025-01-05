@@ -1,10 +1,11 @@
 package vista;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -19,43 +20,40 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import com.toedter.calendar.JDateChooser;
-
 import controlador.Controlador;
 import modelo.ContactoIndividual;
 import modelo.Mensaje;
-import java.awt.event.ActionListener;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.awt.event.ActionEvent;
 
 public class VentanaBuscar extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private List<ContactoIndividual> misContactos;
-    private JList<Mensaje> list; 
-    private JTextField textField_1;
+    private JTextField textFieldTelefono;
+    private JTextField textFieldTexto;
+    private DefaultListModel<Mensaje> mensajeModel;
+    private JPanel panelMensajes;
+    private JList<Mensaje> list;
 
     /**
      * Create the frame.
      */
     public VentanaBuscar() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setBounds(100, 100, 606, 462);
-        
+
         misContactos = Controlador.INSTANCE.getUsuarioActual().getContactosIndividuales();
-        
+
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         GridBagLayout gbl_contentPane = new GridBagLayout();
-        gbl_contentPane.columnWidths = new int[]{0, 66, 40, 71, 0, 0, 10, 0};
-        gbl_contentPane.rowHeights = new int[]{62, 64, 10, 0, 10, 0};
-        gbl_contentPane.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
-        gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+        gbl_contentPane.columnWidths = new int[] { 0, 66, 40, 71, 0, 0, 10, 0 };
+        gbl_contentPane.rowHeights = new int[] { 62, 64, 10, 0, 10, 0 };
+        gbl_contentPane.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE };
+        gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
         contentPane.setLayout(gbl_contentPane);
-        
+
         JLabel lblContacto = new JLabel("Contacto:");
         GridBagConstraints gbc_lblContacto = new GridBagConstraints();
         gbc_lblContacto.anchor = GridBagConstraints.EAST;
@@ -63,11 +61,11 @@ public class VentanaBuscar extends JFrame {
         gbc_lblContacto.gridx = 1;
         gbc_lblContacto.gridy = 0;
         contentPane.add(lblContacto, gbc_lblContacto);
-        
+
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("Todos");
-        misContactos.stream().forEach(c -> model.addElement(c.getNombre()));
-        
+        misContactos.forEach(c -> model.addElement(c.getNombre()));
+
         JComboBox<String> comboBox = new JComboBox<>(model);
         GridBagConstraints gbc_comboBox = new GridBagConstraints();
         gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -75,7 +73,7 @@ public class VentanaBuscar extends JFrame {
         gbc_comboBox.gridx = 2;
         gbc_comboBox.gridy = 0;
         contentPane.add(comboBox, gbc_comboBox);
-        
+
         JLabel lblTelefono = new JLabel("Telefono:");
         GridBagConstraints gbc_lblTelefono = new GridBagConstraints();
         gbc_lblTelefono.anchor = GridBagConstraints.EAST;
@@ -83,78 +81,73 @@ public class VentanaBuscar extends JFrame {
         gbc_lblTelefono.gridx = 3;
         gbc_lblTelefono.gridy = 0;
         contentPane.add(lblTelefono, gbc_lblTelefono);
-        
-        
-        
-        
-        
-        JButton btnNewButton = new JButton("Buscar");
-        
-        
-        textField_1 = new JTextField();
-        GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-        gbc_textField_1.insets = new Insets(0, 0, 5, 5);
-        gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-        gbc_textField_1.gridx = 4;
-        gbc_textField_1.gridy = 0;
-        contentPane.add(textField_1, gbc_textField_1);
-        textField_1.setColumns(10);
-        
-        GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-        gbc_btnNewButton.insets = new Insets(0, 0, 5, 5);
-        gbc_btnNewButton.gridx = 5;
-        gbc_btnNewButton.gridy = 0;
-        contentPane.add(btnNewButton, gbc_btnNewButton);
-        
-        JLabel lblText = new JLabel("Texto:");
-        GridBagConstraints gbc_lblText = new GridBagConstraints();
-        gbc_lblText.insets = new Insets(0, 0, 5, 5);
-        gbc_lblText.gridx = 1;
-        gbc_lblText.gridy = 1;
-        contentPane.add(lblText, gbc_lblText);
-        
-        JScrollPane scrollPane = new JScrollPane();
-        GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-        gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
-        gbc_scrollPane.fill = GridBagConstraints.BOTH;
-        gbc_scrollPane.gridwidth = 4;
-        gbc_scrollPane.gridx = 2;
-        gbc_scrollPane.gridy = 1;
-        contentPane.add(scrollPane, gbc_scrollPane);
-        
-        JTextField textField = new JTextField();
-        scrollPane.setViewportView(textField);
-        
-        JPanel panelMensajes = new JPanel();
-        GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
-        gbc_scrollPane_1.insets = new Insets(0, 0, 5, 5);
-        gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
-        gbc_scrollPane_1.gridwidth = 5;
-        gbc_scrollPane_1.gridx = 1;
-        gbc_scrollPane_1.gridy = 3;
-        contentPane.add(panelMensajes, gbc_scrollPane_1);
-        
-        DefaultListModel<Mensaje> mensajeModel = new DefaultListModel<>();
-        btnNewButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		//vacio lo que se haya podido buscar antes
-        		mensajeModel.clear();
-        		list = new JList<>(mensajeModel); // JList ahora usa el modelo de Mensaje
-				list.setCellRenderer(new MensajeCellRenderer()); // Configurar el renderizador personalizado
-				panelMensajes.add(list, BorderLayout.CENTER);
-				
-        		String contactoMensaje = comboBox.getSelectedItem().toString();
-        		String telefonoMensaje = textField_1.getText();
-        		String textoMensaje = textField.getText();
-				List<Mensaje> mensajes = Controlador.INSTANCE.buscarMensajes(contactoMensaje, telefonoMensaje, textoMensaje);
-				
-				//lo muestro con mensajes cell renderer
-				mensajeModel.addAll(mensajes);
-				list = new JList<>(mensajeModel); // JList ahora usa el modelo de Mensaje
-				list.setCellRenderer(new MensajeCellRenderer()); // Configurar el renderizador personalizado
-				panelMensajes.add(list, BorderLayout.CENTER);
-        	}
+
+        textFieldTelefono = new JTextField();
+        GridBagConstraints gbc_textFieldTelefono = new GridBagConstraints();
+        gbc_textFieldTelefono.insets = new Insets(0, 0, 5, 5);
+        gbc_textFieldTelefono.fill = GridBagConstraints.HORIZONTAL;
+        gbc_textFieldTelefono.gridx = 4;
+        gbc_textFieldTelefono.gridy = 0;
+        contentPane.add(textFieldTelefono, gbc_textFieldTelefono);
+        textFieldTelefono.setColumns(10);
+
+        JButton btnBuscar = new JButton("Buscar");
+        GridBagConstraints gbc_btnBuscar = new GridBagConstraints();
+        gbc_btnBuscar.insets = new Insets(0, 0, 5, 5);
+        gbc_btnBuscar.gridx = 5;
+        gbc_btnBuscar.gridy = 0;
+        contentPane.add(btnBuscar, gbc_btnBuscar);
+
+        JLabel lblTexto = new JLabel("Texto:");
+        GridBagConstraints gbc_lblTexto = new GridBagConstraints();
+        gbc_lblTexto.anchor = GridBagConstraints.EAST;
+        gbc_lblTexto.insets = new Insets(0, 0, 5, 5);
+        gbc_lblTexto.gridx = 1;
+        gbc_lblTexto.gridy = 1;
+        contentPane.add(lblTexto, gbc_lblTexto);
+
+        textFieldTexto = new JTextField();
+        GridBagConstraints gbc_textFieldTexto = new GridBagConstraints();
+        gbc_textFieldTexto.insets = new Insets(0, 0, 5, 5);
+        gbc_textFieldTexto.fill = GridBagConstraints.HORIZONTAL;
+        gbc_textFieldTexto.gridx = 2;
+        gbc_textFieldTexto.gridy = 1;
+        gbc_textFieldTexto.gridwidth = 4;
+        contentPane.add(textFieldTexto, gbc_textFieldTexto);
+
+        // Panel para mostrar los mensajes
+        panelMensajes = new JPanel(new BorderLayout());
+        GridBagConstraints gbc_panelMensajes = new GridBagConstraints();
+        gbc_panelMensajes.insets = new Insets(0, 0, 5, 5);
+        gbc_panelMensajes.fill = GridBagConstraints.BOTH;
+        gbc_panelMensajes.gridwidth = 5;
+        gbc_panelMensajes.gridx = 1;
+        gbc_panelMensajes.gridy = 3;
+        contentPane.add(panelMensajes, gbc_panelMensajes);
+
+        // Modelo de la lista de mensajes
+        mensajeModel = new DefaultListModel<>();
+        list = new JList<>(mensajeModel);
+        list.setCellRenderer(new MensajeCellRenderer()); // Renderizador personalizado
+        JScrollPane scrollPane = new JScrollPane(list);
+        panelMensajes.add(scrollPane, BorderLayout.CENTER);
+
+        // Acción del botón "Buscar"
+        btnBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mensajeModel.clear(); // Limpiar los mensajes anteriores
+
+                String contacto = comboBox.getSelectedItem().toString();
+                String telefono = textFieldTelefono.getText();
+                String texto = textFieldTexto.getText();
+
+                // Obtener mensajes desde el controlador
+                List<Mensaje> mensajes = Controlador.INSTANCE.buscarMensajes(contacto, telefono, texto);
+
+                // Agregar los mensajes al modelo
+                mensajes.forEach(mensajeModel::addElement);
+            }
         });
     }
-
 }
