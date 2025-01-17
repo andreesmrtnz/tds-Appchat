@@ -15,6 +15,7 @@ import beans.Entidad;
 import beans.Propiedad;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Descuento;
 import modelo.Grupo;
 import modelo.Usuario;
 
@@ -77,6 +78,7 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 			    new Propiedad("premium", String.valueOf(usuario.isPremium())),
 			    new Propiedad("gruposemisor", obtenerCodigosGruposEmisor(usuario.getGruposEmisor())),
 			    new Propiedad("grupos", obtenerCodigosGrupo(usuario.getContactos())),
+				new Propiedad("descuento", usuario.getDescuento().isPresent() ? usuario.getDescuento().get().getClass().getName() : ""),
 			    new Propiedad("contactos", obtenerCodigosContactoIndividual(usuario.getContactos()))
 			)));
 
@@ -122,11 +124,21 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, "password");
 		String pathImages = servPersistencia.recuperarPropiedadEntidad(eUsuario, "imagenes");
 		Boolean premium = Boolean.valueOf(servPersistencia.recuperarPropiedadEntidad(eUsuario, "premium"));
+		String descuento = servPersistencia.recuperarPropiedadEntidad(eUsuario, "descuento");
+		Descuento descuentoOpt = null;
+		if (!descuento.isEmpty()) {
+			try {
+				descuentoOpt = (Descuento) Class.forName(descuento).newInstance();
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 
 		// Crear objeto Usuario
 		Usuario usuario = new Usuario(nombre, password, telefono, fechaNacimiento, pathImages, saludo);
 		usuario.setCodigo(codigo);
 		usuario.setPremium(premium);
+		usuario.setDescuento(descuentoOpt);
 
 		// Añadir al pool
 		PoolDAO.getUnicaInstancia().addObjeto(codigo, usuario);
@@ -188,6 +200,9 @@ public class AdaptadorUsuarioTDS implements IAdaptadorUsuarioDAO {
 				break;
 			case "grupos":
 				prop.setValor(obtenerCodigosGrupo(user.getContactos()));
+				break;
+			case "descuento":
+				prop.setValor(user.getDescuento().isPresent() ? user.getDescuento().get().getClass().getName() : "");
 				break;
 			}
 			servPersistencia.modificarPropiedad(prop);

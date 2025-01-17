@@ -18,6 +18,9 @@ import com.itextpdf.text.DocumentException;
 
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Descuento;
+import modelo.DescuentoFecha;
+import modelo.DescuentoMensaje;
 import modelo.GeneradorPDF;
 import modelo.Grupo;
 import modelo.Mensaje;
@@ -445,8 +448,14 @@ public enum Controlador {
 
 
 	public double getPrecio() {
-		return usuarioActual.getPrecio();
+	    return usuarioActual.getPrecio();
 	}
+	
+	public Optional<Descuento> getDescuento() {
+		return usuarioActual.getDescuento();
+	}
+
+
 	
 
 }

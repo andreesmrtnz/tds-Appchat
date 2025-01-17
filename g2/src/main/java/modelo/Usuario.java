@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Usuario {
-	private static final double PRECIO = 9.99;
+	public static final double PRECIO = 9.99;
 	
 	private int codigo;
 	private String usuario;
@@ -81,15 +81,42 @@ public class Usuario {
 	            .count();
 	}
 	
-	public double getPrecio(GestorDescuentos gestorDescuentos) {
-	    Descuento descuentoAplicable = gestorDescuentos.obtenerDescuentoAplicable(this);
-	    if (descuentoAplicable != null) {
-	        return descuentoAplicable.getDescuento(PRECIO);
-	    } else {
-	        return PRECIO;
+	public double getPrecio() {
+	    double precioConDescuento = PRECIO;
+
+	    // Si hay un descuento asignado directamente, aplicarlo
+	    if (descuento.isPresent()) {
+	        return descuento.get().getDescuento(precioConDescuento);
 	    }
+
+	    // Descuento por mensajes enviados
+	    int mensajesUltimoMes = getNumeroMensajesUltimoMes();
+	    if (mensajesUltimoMes > 50) { // Umbral de ejemplo
+	        Descuento descuentoMensaje = new DescuentoMensaje(50); // 20% de descuento
+	        precioConDescuento = descuentoMensaje.getDescuento(precioConDescuento);
+	        this.descuento = Optional.of(descuentoMensaje); // Guardamos el descuento aplicado
+	    }
+
+	    // Descuento por fecha (ejemplo: año 2025)
+	    LocalDate ahora = LocalDate.now();
+	    LocalDate inicioDescuento = LocalDate.of(2025, 1, 1);
+	    LocalDate finDescuento = LocalDate.of(2025, 12, 31);
+	    if (!ahora.isBefore(inicioDescuento) && !ahora.isAfter(finDescuento)) {
+	        Descuento descuentoFecha = new DescuentoFecha(inicioDescuento, finDescuento);
+	        precioConDescuento = descuentoFecha.getDescuento(precioConDescuento);
+	        this.descuento = Optional.of(descuentoFecha); // Guardamos el descuento aplicado
+	    }
+
+	    // Asegurar que el precio final no sea negativo
+	    return Math.max(precioConDescuento, 0);
 	}
 
+
+
+
+	public Optional<Descuento> getDescuento() {
+		return descuento;
+	}
 	
 	public void setDescuento(Descuento descuento) {
 		this.descuento = Optional.ofNullable(descuento);

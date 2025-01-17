@@ -32,6 +32,9 @@ import javax.swing.border.EmptyBorder;
 import controlador.Controlador;
 import modelo.Contacto;
 import modelo.ContactoIndividual;
+import modelo.Descuento;
+import modelo.DescuentoFecha;
+import modelo.DescuentoMensaje;
 import modelo.Mensaje;
 import tds.BubbleText;
 import java.awt.Color;
@@ -180,14 +183,36 @@ public class VentanaMain extends JFrame implements Observer {
 		btnPremium.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		        if (controlador.activarPremium()) {
-		            // Muestra un panel de información indicando que ahora es usuario premium
-		            JOptionPane.showMessageDialog(null, "Ahora eres usuario premium.", "Premium Activado", JOptionPane.INFORMATION_MESSAGE);
+		            // Obtener el precio con descuento
+		            double precio = controlador.getPrecio();
+		            
+		            // Obtener el descuento aplicado
+		            Optional<Descuento> descuentoAplicado = controlador.getDescuento();
+		            
+		            // Crear el mensaje a mostrar
+		            String mensaje = "¡Felicidades! Ahora eres usuario premium.\n";
+		            mensaje += "Has pagado: " + String.format("%.2f", precio) + "€.\n";
+		            
+		            if (descuentoAplicado.isPresent()) {
+		                // Si hay un descuento, mostrarlo
+		            	if (descuentoAplicado.get() instanceof DescuentoFecha) {
+		            		mensaje += "Se te ha aplicado un descuento de por tu fecha de registro.\n";
+		            	}
+		            	else if (descuentoAplicado.get() instanceof DescuentoMensaje) {
+		            		mensaje += "Se te ha aplicado un descuento de por tu cantidad de mensajes.\n";
+		            	}
+		                
+		            }
+		            
+		            // Mostrar el mensaje en un JOptionPane
+		            JOptionPane.showMessageDialog(null, mensaje, "Premium Activado", JOptionPane.INFORMATION_MESSAGE);
 		        } else {
-		            // Muestra un panel de error indicando que ya es usuario premium
+		            // Si ya es premium, mostrar un mensaje de error
 		            JOptionPane.showMessageDialog(null, "Ya eres un usuario premium.", "Error", JOptionPane.ERROR_MESSAGE);
 		        }
 		    }
 		});
+
 		
 		JButton btnPdf = new JButton("Pdf");
 		btnPdf.addActionListener(new ActionListener() {
