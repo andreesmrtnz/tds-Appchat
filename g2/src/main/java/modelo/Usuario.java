@@ -1,13 +1,17 @@
 package modelo;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Usuario {
+	private static final double PRECIO = 9.99;
+	
 	private int codigo;
 	private String usuario;
 	private String contraseña;
@@ -16,9 +20,9 @@ public class Usuario {
 	private String imagen;
 	private String saludo;
 	private boolean premium = false;
-	private Descuento descuento;
 	private List<Grupo> gruposEmisor = new LinkedList<>();
 	private List<Contacto> contactos = new ArrayList<>();
+	private Optional<Descuento> descuento;
 
 	public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen,
 			String saludo) {
@@ -65,8 +69,30 @@ public class Usuario {
 		return saludo;
 	}
 
-	public Descuento getDescuento() {
-		return descuento;
+	public int getNumeroMensajesUltimoMes() {
+	    LocalDate fechaActual = LocalDate.now();
+	    LocalDate primerDiaMes = fechaActual.withDayOfMonth(1); // Primer día del mes actual
+	    LocalDate ultimoDiaMes = fechaActual.withDayOfMonth(fechaActual.lengthOfMonth()); // Último día del mes actual
+
+	    return (int) contactos.stream()
+	            .flatMap(c -> c.getMensajesEnviados().stream())
+	            .map(m -> m.getHora().toLocalDate())
+	            .filter(h -> !h.isBefore(primerDiaMes) && !h.isAfter(ultimoDiaMes))
+	            .count();
+	}
+	
+	public double getPrecio(GestorDescuentos gestorDescuentos) {
+	    Descuento descuentoAplicable = gestorDescuentos.obtenerDescuentoAplicable(this);
+	    if (descuentoAplicable != null) {
+	        return descuentoAplicable.getDescuento(PRECIO);
+	    } else {
+	        return PRECIO;
+	    }
+	}
+
+	
+	public void setDescuento(Descuento descuento) {
+		this.descuento = Optional.ofNullable(descuento);
 	}
 
 	public List<Contacto> getContactos() {
@@ -164,10 +190,6 @@ public class Usuario {
 
 	public void setSaludo(String saludo) {
 		this.saludo = saludo;
-	}
-
-	public void setDescuento(Descuento descuento) {
-		this.descuento = descuento;
 	}
 
 	public void setGruposEmisor(List<Grupo> gruposEmisor) {

@@ -1,9 +1,26 @@
 package modelo;
 
-public class DescuentoFecha extends Descuento {
+import java.time.LocalDate;
+
+public class DescuentoFecha implements Descuento {
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+
+    public DescuentoFecha(LocalDate fechaInicio, LocalDate fechaFin) {
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
     @Override
-    public double calcularDescuento() {
-        // Implementación del cálculo de descuento basado en la fecha
-        return 0.0;
+    public double getDescuento(double precioInicial) {
+        return 0.9 * precioInicial; // 10%
     }
 }

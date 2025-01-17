@@ -444,6 +444,9 @@ public enum Controlador {
 	}
 
 
+	public double getPrecio() {
+		return usuarioActual.getPrecio();
+	}
 	
 
 }
