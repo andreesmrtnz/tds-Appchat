@@ -22,7 +22,8 @@ public class Usuario {
 	private boolean premium = false;
 	private List<Grupo> gruposEmisor = new LinkedList<>();
 	private List<Contacto> contactos = new ArrayList<>();
-	private Optional<Descuento> descuento;
+	private Optional<Descuento> descuento = Optional.empty();
+
 
 	public Usuario(String usuario, String contraseña, String telefono, Date fechaNacimiento2, String imagen,
 			String saludo) {

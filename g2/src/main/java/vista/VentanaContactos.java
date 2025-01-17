@@ -24,6 +24,8 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JOptionPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class VentanaContactos extends JFrame {
 
@@ -36,6 +38,7 @@ public class VentanaContactos extends JFrame {
     private JButton btnMoverIzquierda;
     private Controlador controlador;
     private JTextField textField;
+    private JButton btnAddContacto;
 
     public VentanaContactos() {
         controlador = Controlador.INSTANCE;
@@ -126,6 +129,22 @@ public class VentanaContactos extends JFrame {
             textField.setText("");
             JOptionPane.showMessageDialog(this, "Grupo creado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         });
+        
+        btnAddContacto = new JButton("Añadir Contacto");
+        btnAddContacto.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		JFrame ventanaAddContacto = new AlertaAgregarContacto();
+        		ventanaAddContacto.setVisible(true);
+        		dispose();
+        	}
+        });
+        GridBagConstraints gbc_btnAddContacto = new GridBagConstraints();
+        gbc_btnAddContacto.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btnAddContacto.gridheight = 2;
+        gbc_btnAddContacto.insets = new Insets(0, 0, 5, 5);
+        gbc_btnAddContacto.gridx = 1;
+        gbc_btnAddContacto.gridy = 4;
+        contentPane.add(btnAddContacto, gbc_btnAddContacto);
         GridBagConstraints gbc_btnAgregarGrupo = new GridBagConstraints();
         gbc_btnAgregarGrupo.fill = GridBagConstraints.HORIZONTAL;
         gbc_btnAgregarGrupo.gridheight = 2;
@@ -164,7 +183,7 @@ public class VentanaContactos extends JFrame {
         });
         GridBagConstraints gbc_btnModificarGrupo = new GridBagConstraints();
         gbc_btnModificarGrupo.fill = GridBagConstraints.HORIZONTAL;
-        gbc_btnModificarGrupo.insets = new Insets(0, 0, 5, 5);
+        gbc_btnModificarGrupo.insets = new Insets(0, 0, 5, 0);
         gbc_btnModificarGrupo.gridx = 4;
         gbc_btnModificarGrupo.gridy = 4;
         contentPane.add(btnModificarGrupo, gbc_btnModificarGrupo);
