@@ -101,9 +101,7 @@ public class AdaptadorContactoIndividualTDS implements IAdaptadorContactoIndivid
 	        }
 	        servPersistencia.modificarPropiedad(prop);
 	    }
-	    System.out.println("deberia de salir... " + obtenerCodigosMensajesRecibidos(contacto.getMensajesEnviados()));
-		System.out.println("lo que registro en el contacto como mensaje es: " + obtenerCodigosMensajesRecibidos(contacto.getMensajesEnviados()));
-
+	    
 	}
 
 	@Override

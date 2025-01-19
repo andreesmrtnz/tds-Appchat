@@ -7,6 +7,8 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
 
@@ -68,7 +70,7 @@ public class VentanaLogin {
 			frame.setVisible(false);
 		}
 		else {
-			System.out.println("no logeado bien");
+			JOptionPane.showMessageDialog(null, "Credenciales no válidas. Error al iniciar sesión.", "Error de Inicio de Sesión", JOptionPane.ERROR_MESSAGE);
 		}
 		
 		

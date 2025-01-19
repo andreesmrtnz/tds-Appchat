@@ -65,7 +65,6 @@ public class AdaptadorGrupoTDS implements IAdaptadorGrupoDAO {
 		// Registrar entidad usuario
 		eGroup = servPersistencia.registrarEntidad(eGroup);
 		
-		System.out.println("emisor: "+ String.valueOf(group.getEmisor().getCodigo()));
 
 		// Identificador unico
 		group.setCodigo(eGroup.getId());

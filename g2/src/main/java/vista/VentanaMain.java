@@ -239,7 +239,6 @@ public class VentanaMain extends JFrame implements Observer {
 		    @Override
 		    public void mouseClicked(MouseEvent evt) {
 		        // Aquí pones lo que quieres que pase cuando se haga clic en el JLabel
-		        System.out.println("¡Has hecho clic en el perfil!");
 		        
 		        // Por ejemplo, abrir una ventana de configuración de usuario
 		        JFrame ventanaPerfil = new VentanaPerfil();
@@ -384,9 +383,19 @@ public class VentanaMain extends JFrame implements Observer {
 
 		            // Cargar el chat en el panel derecho
 		            loadChat(contacto, chat);
-		            System.out.println("Chat cargado para: " + contactoOTelefono);
+		            JOptionPane.showMessageDialog(
+                            VentanaMain.this,
+                            "Chat cargado para: " + contactoOTelefono,
+                            "Chat cargado",
+                            JOptionPane.PLAIN_MESSAGE
+                    );
 		        } else {
-		            System.out.println("Seleccione o escriba un contacto válido.");
+		        	JOptionPane.showMessageDialog(
+                            VentanaMain.this,
+                            "Por favor seleccione un contacto valido.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
 		        }
 		    }
 		});

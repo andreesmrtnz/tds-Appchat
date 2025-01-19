@@ -91,12 +91,10 @@ public enum Controlador {
 		 */
 		Optional<Usuario> clienteOpt = repoUsuarios.getUsuarioPorTelefono(telefono);
 		if (clienteOpt.isEmpty()) {
-			System.out.println("Usuario no encontrado para el teléfono: " + telefono);
 			return false;
 		}
 
 		Usuario cliente = clienteOpt.get();
-		System.out.println(cliente.getContactos().stream().map(c->c.getMensajesEnviados()).collect(Collectors.toList()));
 		
 
 		// Si la password esta bien inicia sesion
@@ -324,7 +322,6 @@ public enum Controlador {
 	            );
 
 	        if (usuarioActualNoAgregado) {
-	        	System.out.println("lo agregamos");
 	            // Crear un nuevo contacto para el receptor con el nombre igual al número de teléfono del usuario actual
 	            ContactoIndividual nuevoContacto = new ContactoIndividual(usuarioActual.getTelefono(), usuarioActual, usuarioActual.getTelefono());
 	            receptor.addContacto(nuevoContacto);
@@ -361,7 +358,6 @@ public enum Controlador {
 	    Optional<Contacto> c = getContacto(contacto);
 	    ContactoIndividual contact = (ContactoIndividual) c.orElse(null);
 
-	    System.out.println("Buscando...");
 	    return mensajes.stream()
 	            // Filtro por contacto
 	            .filter(m -> contacto.equals("Todos") || 
